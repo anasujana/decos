@@ -62,11 +62,10 @@ function donutChart() {
         element: 'donut-example',
         redraw: true,
         data: [
-            { label: "Download Sales", value: 2 },
-            { label: "In-Store Sales", value: 50 },
             { label: "Mail-Order Sales", value: 20 }
         ],
-        colors: ['#5FBEAA', '#34495E', '#FF9F55']
+        formatter: function (x) {return x + "%"},
+        colors: ['#FF9F55']
     });
 }
 

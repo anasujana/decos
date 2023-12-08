@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Delivery Achievement</title>
+</head>
+<body>
+    <h1>Data Delivery Achievement</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nama Area</th>
+                <th>Plan</th>
+                <th>Actual</th>
+                <th>Minus</th>
+                <th>Achievement</th>
+            </tr>
+        </thead>
+        <tbody id="data-table">
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Total</th>
+                <th id="total-plan"></th>
+                <th id="total-act"></th>
+                <th id="total-minus"></th>
+                <th id="total-achievement"></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+        const dataTable = document.getElementById("data-table");
+        const totalPlan = document.getElementById("total-plan");
+        const totalAct = document.getElementById("total-act");
+        const totalMinus = document.getElementById("total-minus");
+        const totalAchievement = document.getElementById("total-achievement");
+    
+        const eventSource = new EventSource("server1.php");
+    
+        eventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+    
+            // Clear the table body before adding new data
+            dataTable.innerHTML = "";
+            if (data.length > 0) {
+                // Loop through the data and add rows to the table
+                for (let i = 0; i < data.length - 1; i++) {
+                    const row = data[i];
+                    const newRow = document.createElement("tr");
+                    newRow.innerHTML = `
+                        <td>${row.nama_area ? row.nama_area : ''}</td>
+                        <td>${row.plan_deliv ? row.plan_deliv : ''}</td>
+                        <td>${row.act_deliv ? row.act_deliv : ''}</td>
+                        <td>${row.minus ? row.minus : ''}</td>
+                        <td>${row.achievement ? row.achievement : ''}</td>
+                    `;
+                    dataTable.appendChild(newRow);
+                }
+
+                // Display the total data in the footer for the last row
+                totalPlan.textContent = data[data.length - 1].total_planning || '';
+                totalAct.textContent = data[data.length - 1].total_actual || '';
+                totalMinus.textContent = data[data.length - 1].total_minus || '';
+                totalAchievement.textContent = data[data.length - 1].total_achievement || '';
+            } else {
+                // If data is empty, set the total values to empty strings
+                totalPlan.textContent = '';
+                totalAct.textContent = '';
+                totalMinus.textContent = '';
+                totalAchievement.textContent = '';
+            }
+
+            // ...
+
+        };
+    </script>
+    
+</body>
+</html>
