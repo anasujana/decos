@@ -24,88 +24,88 @@ date_default_timezone_set('Asia/Jakarta');
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 
     <style type="text/css">
-    /* Tambahkan class CSS untuk tabel */
-    .responsive-table {
-        overflow-x: auto;
-    }
+        /* Tambahkan class CSS untuk tabel */
+        .responsive-table {
+            overflow-x: auto;
+        }
 
-    .tg {
-        border-collapse: collapse;
-        border-spacing: 0;
-        width: 100%;
-    }
-
-    .tg td {
-        border-color: black;
-        border-style: solid;
-        border-width: 1px;
-        font-family: Arial, sans-serif;
-        font-size: 16px;
-        overflow: hidden;
-        padding: 9px;
-        word-break: normal;
-        font-weight: bold;
-    }
-
-    .tg .tg-v0401 {
-        border-color: black;
-        border-style: solid;
-        border-width: 1px;
-        font-family: Arial, sans-serif;
-        font-size: 16px;
-        overflow: hidden;
-        padding: 9px;
-        word-break: normal;
-    }
-
-    .tg th {
-        background-color: #2075c9;
-        border-color: inherit;
-        color: white;
-        text-align: center;
-        vertical-align: middle;
-        border-style: solid;
-        border-width: 1px;
-        font-family: Arial, sans-serif;
-        font-size: 16px;
-        font-weight: bold;
-        overflow: hidden;
-        padding: 9px;
-        word-break: normal;
-    }
-
-    .tg .tg-v040 {
-        background-color: #212529;
-        border-color: white;
-        color: #ffffff;
-        text-align: center;
-        vertical-align: middle;
-        width: 100px;
-        height: 140px;
-        font-size: 16px;
-    }
-
-    .tg .tg-v0401 {
-        background-color: #212529;
-        border-color: white;
-        color: white;
-        text-align: center;
-        vertical-align: middle;
-        width: 110px;
-    }
-
-    /* Tambahkan aturan media query untuk tabel responsif */
-    @media screen and (max-width: 768px) {
         .tg {
-            font-size: 14px;
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
         }
 
-        .tg td,
-        .tg th {
-            padding: 6px;
+        .tg td {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            overflow: hidden;
+            padding: 9px;
+            word-break: normal;
+            font-weight: bold;
         }
-    }
-</style>
+
+        .tg .tg-v0401 {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            overflow: hidden;
+            padding: 9px;
+            word-break: normal;
+        }
+
+        .tg th {
+            background-color: #2075c9;
+            border-color: inherit;
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            overflow: hidden;
+            padding: 9px;
+            word-break: normal;
+        }
+
+        .tg .tg-v040 {
+            background-color: #212529;
+            border-color: white;
+            color: #ffffff;
+            text-align: center;
+            vertical-align: middle;
+            width: 100px;
+            height: 140px;
+            font-size: 16px;
+        }
+
+        .tg .tg-v0401 {
+            background-color: #212529;
+            border-color: white;
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+            width: 110px;
+        }
+
+        /* Tambahkan aturan media query untuk tabel responsif */
+        @media screen and (max-width: 768px) {
+            .tg {
+                font-size: 14px;
+            }
+
+            .tg td,
+            .tg th {
+                padding: 6px;
+            }
+        }
+    </style>
 
 </head>
 
@@ -167,7 +167,7 @@ date_default_timezone_set('Asia/Jakarta');
                 <div class="navbar-wrapper">
                     <div class="navbar-container container-fluid">
                         <ul class="nav-left">
-                            
+
                             <li>
                                 <a href="#!" onclick="javascript:toggleFullScreen()" class="waves-effect waves-light">
                                     <i class="ti-fullscreen"></i>
@@ -191,48 +191,46 @@ date_default_timezone_set('Asia/Jakarta');
                     ?>
                     <!-- <div class="pcoded-content">
                         <div class="pcoded-inner-content"> -->
-                            <div class="main-body">
-                                <div class="page-wrapper">
-                                    <div class="page-body">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <img src="assets/images/logo fln.png" width="145px" alt="">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <h1 style="font-size: 30px;" class="m-b-10 text-center font-weight-bold">Monitoring Delivery <br> To Customer</h1>
-                                            </div>
-                                            <div class="col-md-4 font-weight-bold">
-                                                <p style="font-size: 13px;" class="m-b-10 text-right"  id="tgl">
-                                                </p>
-                                                <p style="font-size: 13px;" class="text-right" id="clock"> 
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="row" id="andon_monitor">
-                                            <table class="tg table responsive-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="tg-v0401"></th>
-                                                        <th class="tg-v0401" style="font-size: 30px; color: white;">PLAN</th>
-                                                        <th class="tg-v0401"><a href="" style="font-size: 30px; color: white;">ACTUAL</a></th>
-                                                        <th class="tg-v0401"><a href="" style="font-size: 30px; color: white;">BALANCE</a></th>
-                                                        <th class="tg-v0401"><a href="" style="font-size: 30px; color: white;">ACHIEVEMENT</a></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="data-table">
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr>
-                                                        <th class="tg-v0401" style="font-size: 35px; color: white; height: 140px;">TOTAL</th>
-                                                        <th class="tg-v0401" style="font-size: 60px; color: white;" id="total-plan"></th>
-                                                        <th class="tg-v0401" style="font-size: 60px; color: white;" id="total-act"></th>
-                                                        <th class="tg-v0401" style="font-size: 60px; color: white;" id="total-minus"></th>
-                                                        <th class="tg-v0401" style="font-size: 60px; color: white;" id="total-achievement"></th>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
-                                        </div>
+                    <div class="main-body">
+                        <div class="page-wrapper">
+                            <div class="page-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <img src="assets/images/logo fln.png" width="145px" alt="">
                                     </div>
+                                    <div class="col-md-4">
+                                        <h1 style="font-size: 30px;" class="m-b-10 text-center font-weight-bold">Monitoring Delivery <br> To Customer</h1>
+                                    </div>
+                                    <div class="col-md-4 font-weight-bold">
+                                        <p style="font-size: 13px;" class="m-b-10 text-right" id="tgl">
+                                        </p>
+                                        <p style="font-size: 13px;" class="text-right" id="clock">
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row" id="andon_monitor">
+                                    <table class="tg table responsive-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="tg-v0401"></th>
+                                                <th class="tg-v0401" style="font-size: 30px; color: white;">PLAN</th>
+                                                <th class="tg-v0401"><a href="" style="font-size: 30px; color: white;">ACTUAL</a></th>
+                                                <th class="tg-v0401"><a href="" style="font-size: 30px; color: white;">BALANCE</a></th>
+                                                <th class="tg-v0401"><a href="" style="font-size: 30px; color: white;">ACHIEVEMENT</a></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="data-table">
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th class="tg-v0401" style="font-size: 35px; color: white; height: 140px;">TOTAL</th>
+                                                <th class="tg-v0401" style="font-size: 60px; color: white;" id="total-plan"></th>
+                                                <th class="tg-v0401" style="font-size: 60px; color: white;" id="total-act"></th>
+                                                <th class="tg-v0401" style="font-size: 60px; color: white;" id="total-minus"></th>
+                                                <th class="tg-v0401" style="font-size: 60px; color: white;" id="total-achievement"></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -240,6 +238,8 @@ date_default_timezone_set('Asia/Jakarta');
                 </div>
             </div>
         </div>
+    </div>
+    </div>
     </div>
 
     <script type="text/javascript" src="assets/js/jquery/jquery.min.js"></script>
@@ -293,9 +293,9 @@ date_default_timezone_set('Asia/Jakarta');
                     let achievementColor = "text-primary";
                     if (row.achievement < 85) {
                         achievementColor = "text-danger";
-                    } else if (row.achievement>=85 && row.achievement<95) {
+                    } else if (row.achievement >= 85 && row.achievement < 95) {
                         achievementColor = "text-warning";
-                    } else if (row.achievement>=95 && row.achievement<=99) {
+                    } else if (row.achievement >= 95 && row.achievement <= 99) {
                         achievementColor = "text-success";
                     } else if (row.achievement > 99) {
                         achievementColor = "text-primary";
