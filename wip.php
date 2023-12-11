@@ -243,7 +243,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                             <div class="form-group row">
                                                                 <div class="col-sm-12">
                                                                     <form action="" method="POST">
-                                                                        <input type="text" name="part_scan" id="part_scan" class="form-control form-control-round" placeholder="Scan Box QR" autofocus>
+                                                                        <input type="text" name="part_scan" id="part_scan" class="form-control form-control-round" style="text-align: center;" placeholder="PART NO / QTY" autofocus>
                                                                         <input type="submit" name="submit_scan" style="display:none">
                                                                     </form>
                                                                 </div>

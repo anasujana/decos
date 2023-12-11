@@ -403,19 +403,34 @@ date_default_timezone_set('Asia/Jakarta')
                                                     </div>
                                                     <div class="card-block table-border-style">
                                                         <div class="table-responsive">
-                                                            <table class="table table-striped" id="stok_data">
+                                                            <table class="table table-bordered text-center" id="stok_data">
                                                                 <thead>
-                                                                    <th>NO</th>
-                                                                    <th>WAREHOUSE</th>
-                                                                    <th>CUSTOMER</th>
-                                                                    <th>PART NO FLN</th>
-                                                                    <th>PART NAME</th>
-                                                                    <th>STD STOCK</th>
-                                                                    <th>STOK WH</th>
-                                                                    <th>DELIV (DAY)</th>
-                                                                    <th>STOCK (DAY)</th>
-                                                                    <th>ACTION</th>
+                                                                    <tr style="text-align: center;">
+                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;NO&nbsp;</th>
+                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">WH&nbsp;&nbsp;</th>
+                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;CUSTOMER&nbsp;</th>
+                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;PART NO&nbsp;</th>
+                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">PART NAME&nbsp;&nbsp;</th>
+                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;DELIV/DAY&nbsp;</th>
+                                                                        <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK FG&nbsp;&nbsp;</th>
+                                                                        <th style="width: 115px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK WIP</th>
+                                                                        <th style="width: 28px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;PLAN DELIVERY</th>
+                                                                        <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;STD STOCK</th>
+                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;REMARK</th>
+                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;ACTION&nbsp;</th>
+                                                                    </tr>
+                                                                    <tr style="text-align: center;">
+                                                                        <th style="width: 15.2125px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
+                                                                        <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
+                                                                        <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
+                                                                        <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKIS</th>
+                                                                        <th style="width: 18px;" class="text-center" style="vertical-align: middle;">&nbsp;PLAN</th>
+                                                                        <th style="width: 10px;" class="text-center" style="vertical-align: middle;">&nbsp;BALANCE</th>
+                                                                        <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
+                                                                        <th style="width: 15px;" class="text-center" style="vertical-align: middle;">BALANCE</th>
+                                                                    </tr>
                                                                 </thead>
+                                                                <!-- Your table body goes here -->
                                                             </table>
                                                         </div>
                                                     </div>
@@ -459,10 +474,10 @@ date_default_timezone_set('Asia/Jakarta')
                                 <label for="Nama">Standar Stock</label>
                                 <input type="text" name="std_edit" id="std_data" class="form-control form-control-round">
                             </div>
-                            <div class="form-group col-md-12">
+                            <!-- <div class="form-group col-md-12">
                                 <label for="Nama">Current Stock</label>
                                 <input type="text" name="stock_edit" id="stock_data" class="form-control form-control-round">
-                            </div>
+                            </div> -->
                             <div class="form-group col-md-12">
                                 <label for="Nama">Delivery/Day</label>
                                 <input type="text" name="deliv_edit" id="deliv_data" class="form-control form-control-round">
