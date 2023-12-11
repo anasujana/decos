@@ -86,7 +86,7 @@ date_default_timezone_set('Asia/Jakarta')
                         $tgl_akhir_wip = $cek_wip_out['tgl'];
                         $tambah_stock_wip = $stock_in_wip + $qr_part_no[1];
 
-                        if ($part_no_in == $qr_part_no[0]) {
+                        if ($part_no_wip == $qr_part_no[0]) {
                             if ($now_date != $tgl_akhir_wip and $_GET['kategori'] != 1) {
                                 // tambahkan ke stok area
                                 $add_stock_in = mysqli_query($conn, "INSERT INTO wip_out VALUES (NULL,'$qr_part_no[0]','$now_date','$qr_part_no[1]','$_GET[kategori]')");
@@ -165,7 +165,7 @@ date_default_timezone_set('Asia/Jakarta')
                         if ($part_no_mt == $qr_part_no[0]) {
                             if ($now_date != $last_updated_area and $_GET['kategori'] == 1) {
                                 // tambahkan ke stok area
-                                $add_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$tambah_stock','$_GET[kategori]','$now_date')");
+                                $add_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$tambah_stock_area','$_GET[kategori]','$now_date')");
                             } else if ($now_date != $last_updated_area and $_GET['kategori'] != 1) {
                                 // update stock_area pada tgl terakhir
                                 $add_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$kurangi_stock_area','$_GET[kategori]','$now_date')");
@@ -211,7 +211,7 @@ date_default_timezone_set('Asia/Jakarta')
                         if (($part_no_all == $qr_part_no[0]) or ($part_no_all == NULL)) {
                             if ($now_date != $last_stock_all) {
                                 // tambahkan ke stok area
-                                $add_stok_all = mysqli_query($conn, "INSERT INTO stock_all VALUES (NULL,'$qr_part_no[0]','$now_date','$tambah_stock',' $del_day','$std_stock',NULL)");
+                                $add_stok_all = mysqli_query($conn, "INSERT INTO stock_all VALUES (NULL,'$qr_part_no[0]','$now_date','$tambah_stock_all',' $del_day','$std_stock',NULL)");
                             } else if ($now_date == $last_stock_all and $_GET['kategori'] == 1) {
                                 // update stock_area pada tgl terakhir
                                 $update_stock_all = mysqli_query($conn, "UPDATE stock_all SET qty='$tambah_stock_all' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_stock_all'");
