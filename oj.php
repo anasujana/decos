@@ -316,7 +316,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                                                 lp.part_name,
                                                                                                                 s.qty,
                                                                                                                 ar.nama_area,
-                                                                                                                ks. part_asal
+                                                                                                                ks. jenis_stock
                                                                                                         FROM stock_in s 
                                                                                                         left join kategori_stock ks on ks.id = s.kategori
                                                                                                         left join list_part lp on s.part_no = lp.part_no
@@ -334,7 +334,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                         $part_no = $data1['part_no'];
                                                                         $part_name = $data1['part_name'];
                                                                         $prod = $data1['qty'];
-                                                                        $part_asal = $data1['part_asal'];
+                                                                        $part_asal = $data1['jenis_stock'];
                                                                     ?>
                                                                         <tr>
                                                                             <td><?php echo $no; ?></td>
