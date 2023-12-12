@@ -193,9 +193,10 @@ date_default_timezone_set('Asia/Jakarta')
                                                     <div class="card-block">
                                                         <div class="row align-items-center">
                                                             <div class="col-8">
-                                                                <h4 class="text-c-purple"><?php echo $total_plan1 ?></h4>
+                                                                <h3 class="text-c-purple"><?php echo $total_plan1 ?></h3>
                                                             </div>
                                                             <div class="col-4 text-right">
+                                                                <img class="img-40" src="assets\images\plan.png" alt="">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -215,9 +216,10 @@ date_default_timezone_set('Asia/Jakarta')
                                                     <div class="card-block">
                                                         <div class="row align-items-center">
                                                             <div class="col-8">
-                                                                <h4 class="text-c-green"><?php echo $total_act1 ?></h4>
+                                                                <h3 class="text-c-green"><?php echo $total_act1 ?></h3>
                                                             </div>
                                                             <div class="col-4 text-right">
+                                                                <img class="img-40" src="assets\images\act.png" alt="">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -237,9 +239,10 @@ date_default_timezone_set('Asia/Jakarta')
                                                     <div class="card-block">
                                                         <div class="row align-items-center">
                                                             <div class="col-8">
-                                                                <h4 class="text-c-red"><?php echo $total_min1 ?></h4>
+                                                                <h3 class="text-c-red"><?php echo $total_min1 ?></h3>
                                                             </div>
                                                             <div class="col-4 text-right">
+                                                                <img class="img-40" src="assets\images\minus.png" alt="">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -259,9 +262,10 @@ date_default_timezone_set('Asia/Jakarta')
                                                     <div class="card-block">
                                                         <div class="row align-items-center">
                                                             <div class="col-8">
-                                                                <h4 class="text-c-blue"><?php echo $achtotal . "%" ?></h4>
+                                                                <h3 class="text-c-blue"><?php echo $achtotal . "%" ?></h3>
                                                             </div>
                                                             <div class="col-4 text-right">
+                                                                <img class="img-40" src="assets\images\ach.png" alt="">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -350,7 +354,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                     </div>
                                                     <div class="card-block table-border-style">
                                                         <div class="table-responsive">
-                                                            <table class="table table-striped datas">
+                                                            <table class="table table-bordered datas">
                                                                 <thead>
                                                                     <th>NO</th>
                                                                     <th>WAREHOUSE</th>
@@ -423,8 +427,8 @@ date_default_timezone_set('Asia/Jakarta')
                                                                     <tr style="text-align: center;">
                                                                         <th style="width: 15.2125px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
                                                                         <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
-                                                                        <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
                                                                         <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKIS</th>
+                                                                        <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
                                                                         <th style="width: 18px;" class="text-center" style="vertical-align: middle;">&nbsp;PLAN</th>
                                                                         <th style="width: 10px;" class="text-center" style="vertical-align: middle;">&nbsp;BALANCE</th>
                                                                         <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
