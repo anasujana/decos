@@ -20,16 +20,15 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                             sa.std_stock AS std_stok,
                                                             sa.remark,
                                                             '' AS action
-                                                        FROM
-                                                            stock_area sar
-                                                            LEFT JOIN stock_all sa ON sa.part_no = sar.part_no
-                                                            LEFT JOIN list_part lp ON sar.part_no = lp.part_no
+                                                        FROM list_part lp
+                                                            LEFT JOIN stock_all sa ON sa.part_no = lp.part_no
+                                                            LEFT JOIN stock_area sar ON sar.part_no = lp.part_no
                                                             LEFT JOIN kategori_stock ks ON ks.id = sar.kategori
                                                             LEFT JOIN part_prod pp ON lp.part_no = pp.part_no
                                                             LEFT JOIN customer_prod cs ON pp.customer_id = cs.id
                                                             LEFT JOIN area ar ON ar.id = pp.id_area
                                                             LEFT JOIN plan pl on sar.part_no = pl.part_no
-                                                        WHERE sar.kategori IN (1, 2, 3) AND sar.tgl_updated = '2023-12-12'
+                                                        WHERE sar.kategori IN (1, 2, 3) AND sar.tgl_updated = '$now_date' AND pl.tgl = '$now_date'
                                                         GROUP BY
                                                             sar.part_no,
                                                             ar.nama_area,

@@ -81,18 +81,17 @@ date_default_timezone_set('Asia/Jakarta')
 
                         // Cek part  NO & qty wip out
                         $cek_wip_out = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, qty, tgl FROM wip_out where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl DESC LIMIT 1"));
-                        $part_no_wip = $cek_wip_out['part_no'];
-                        $stock_in_wip = $cek_wip_out['qty'];
-                        $tgl_akhir_wip = $cek_wip_out['tgl'];
+                        $stock_in_wip = $cek_wip_out['qty'] ?? 0;
+                        $tgl_akhir_wip = $cek_wip_out['tgl'] ?? null;
                         $tambah_stock_wip = $stock_in_wip + $qr_part_no[1];
 
-                        if ($part_no_wip == $qr_part_no[0]) {
+                        if ($part_no_mt == $qr_part_no[0]) {
                             if ($now_date != $tgl_akhir_wip and $_GET['kategori'] != 1) {
                                 // tambahkan ke stok area
-                                $add_stock_in = mysqli_query($conn, "INSERT INTO wip_out VALUES (NULL,'$qr_part_no[0]','$now_date','$qr_part_no[1]','$_GET[kategori]')");
+                                $add_stock_in = mysqli_query($conn, "INSERT INTO wip_out VALUES (NULL,'$qr_part_no[0]','$tambah_stock_wip','$now_date','$_GET[kategori]')");
                             } else if ($now_date == $tgl_akhir_wip) {
                                 // update stock_area pada tgl terakhir
-                                $add_stock_in = mysqli_query($conn, "UPDATE wip_out SET qty='$tambah_stock_in' WHERE part_no='$qr_part_no[0]' and tgl='$tgl_akhir_in' and kategori='$_GET[kategori]'");
+                                $add_stock_in = mysqli_query($conn, "UPDATE wip_out SET qty='$tambah_stock_wip' WHERE part_no='$qr_part_no[0]' and tgl='$tgl_akhir_wip' and kategori='$_GET[kategori]'");
                             }
                             echo '<script>
                                     swal.fire({
@@ -119,16 +118,15 @@ date_default_timezone_set('Asia/Jakarta')
 
                         // Cek part  NO & qty stock in
                         $cek_stock_in = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, qty, tgl FROM stock_in where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl DESC LIMIT 1"));
-                        $part_no_in = $cek_stock_in['part_no'];
-                        $stock_in = $cek_stock_in['qty'];
-                        $tgl_akhir_in = $cek_stock_in['tgl'];
+                        $stock_in = $cek_stock_in['qty'] ?? 0;
+                        $tgl_akhir_in = $cek_stock_in['tgl'] ?? null;
                         $tambah_stock_in = $stock_in + $qr_part_no[1];
 
-                        if ($part_no_in == $qr_part_no[0]) {
+                        if ($part_no_mt == $qr_part_no[0]) {
                             if ($now_date != $tgl_akhir_in and $_GET['kategori'] == 1) {
                                 // tambahkan ke stok area
                                 $add_stock_in = mysqli_query($conn, "INSERT INTO stock_in VALUES (NULL,'$qr_part_no[0]','$now_date','$qr_part_no[1]','$_GET[kategori]')");
-                            } else if ($now_date == $tgl_akhir_in) {
+                            } else if ($now_date == $tgl_akhir_in and $_GET['kategori'] == 1) {
                                 // update stock_area pada tgl terakhir
                                 $add_stock_in = mysqli_query($conn, "UPDATE stock_in SET qty='$tambah_stock_in' WHERE part_no='$qr_part_no[0]' and tgl='$tgl_akhir_in' and kategori='$_GET[kategori]'");
                             }
@@ -156,11 +154,16 @@ date_default_timezone_set('Asia/Jakarta')
 
                         // Cek part  NO & qty stock area
                         $part_no_all = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, current_stock, tgl_updated FROM stock_area where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl_updated DESC LIMIT 1"));
-                        $part_no_area = $part_no_all['part_no'];
-                        $stock_area = $part_no_all['current_stock'];
-                        $last_updated_area = $part_no_all['tgl_updated'];
+                        $stock_area = $part_no_all['current_stock'] ?? 0;
+                        $last_updated_area = $part_no_all['tgl_updated'] ?? null;
                         $tambah_stock_area = $stock_area + $qr_part_no[1];
                         $kurangi_stock_area = $stock_area - $qr_part_no[1];
+
+                        // Cek part  NO & qty stock fg
+                        $part_no_fg = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, current_stock, tgl_updated FROM stock_area where part_no='$qr_part_no[0]' and kategori=1 ORDER BY tgl_updated DESC LIMIT 1"));
+                        $stock_fg = $part_no_fg['current_stock'] ?? 0;
+                        $last_updated_fg = $part_no_fg['tgl_updated'] ?? null;
+                        $tambah_stock_fg = $stock_fg + $qr_part_no[1];
 
                         if ($part_no_mt == $qr_part_no[0]) {
                             if ($now_date != $last_updated_area and $_GET['kategori'] == 1) {
@@ -168,13 +171,15 @@ date_default_timezone_set('Asia/Jakarta')
                                 $add_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$tambah_stock_area','$_GET[kategori]','$now_date')");
                             } else if ($now_date != $last_updated_area and $_GET['kategori'] != 1) {
                                 // update stock_area pada tgl terakhir
-                                $add_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$kurangi_stock_area','$_GET[kategori]','$now_date')");
+                                $min_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$kurangi_stock_area','$_GET[kategori]','$now_date')");
+                                $add_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$tambah_stock_area',1,'$now_date')");
                             } else if ($now_date == $last_updated_area and $_GET['kategori'] == 1) {
                                 // update stock_area pada tgl terakhir
                                 $update_stock_area = mysqli_query($conn, "UPDATE stock_area SET current_stock='$tambah_stock_area' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_updated_area' and kategori='$_GET[kategori]'");
                             } else if ($now_date == $last_updated_area and $_GET['kategori'] != 1) {
                                 // update stock_area pada tgl terakhir
-                                $update_stock_area = mysqli_query($conn, "UPDATE stock_area SET current_stock='$kurangi_stock_area' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_updated_area' and kategori='$_GET[kategori]'");
+                                $update_min_stock_area = mysqli_query($conn, "UPDATE stock_area SET current_stock='$kurangi_stock_area' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_updated_area' and kategori='$_GET[kategori]'");
+                                $update_add_stock_area = mysqli_query($conn, "UPDATE stock_area SET current_stock='$tambah_stock_fg' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_updated_area' and kategori=1");
                             };
                             echo '<script>
                                     swal.fire({
@@ -200,24 +205,23 @@ date_default_timezone_set('Asia/Jakarta')
 
                         // Cek part no & qty stock all
                         $data_stock_all = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, tgl_updated, del_day, std_stock, qty FROM stock_all where part_no='$qr_part_no[0]' ORDER BY tgl_updated DESC LIMIT 1"));
-                        $part_no_all = $data_stock_all['part_no'];
-                        $last_stock_all = $data_stock_all['tgl_updated'];
-                        $stock_all = $data_stock_all['qty'];
-                        $del_day = $data_stock_all['del_day'];
-                        $std_stock = $data_stock_all['std_stock'];
+                        $last_stock_all = $data_stock_all['tgl_updated'] ?? null;
+                        $stock_all = $data_stock_all['qty'] ?? 0;
+                        $del_day = $data_stock_all['del_day'] ?? 0;
+                        $std_stock = $data_stock_all['std_stock'] ?? 0;
                         $tambah_stock_all = $stock_all + $qr_part_no[1];
                         $kurangi_stock_all = $stock_all - $qr_part_no[1];
 
-                        if (($part_no_all == $qr_part_no[0]) or ($part_no_all == NULL)) {
-                            if ($now_date != $last_stock_all) {
+                        if (($part_no_mt == $qr_part_no[0]) or ($part_no_all == NULL)) {
+                            if ($now_date != $last_stock_all and $_GET['kategori'] == 1) {
                                 // tambahkan ke stok area
                                 $add_stok_all = mysqli_query($conn, "INSERT INTO stock_all VALUES (NULL,'$qr_part_no[0]','$now_date','$tambah_stock_all',' $del_day','$std_stock',NULL)");
                             } else if ($now_date == $last_stock_all and $_GET['kategori'] == 1) {
                                 // update stock_area pada tgl terakhir
                                 $update_stock_all = mysqli_query($conn, "UPDATE stock_all SET qty='$tambah_stock_all' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_stock_all'");
-                            } else if ($now_date == $last_stock_all and $_GET['kategori'] != 1) {
-                                // update stock_area pada tgl terakhir
-                                $update_stock_all = mysqli_query($conn, "UPDATE stock_all SET qty='$kurangi_stock_all' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_stock_all'");
+                                // } else if ($now_date == $last_stock_all and $_GET['kategori'] != 1) {
+                                //     // update stock_area pada tgl terakhir
+                                //     $update_stock_all = mysqli_query($conn, "UPDATE stock_all SET qty='$kurangi_stock_all' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_stock_all'");
                             }
                             echo '<script>
                                     swal.fire({
@@ -291,7 +295,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                             <div class="form-group row">
                                                                 <div class="col-sm-12">
                                                                     <form action="" method="POST">
-                                                                        <input type="text" name="part_scan" id="part_scan" class="form-control form-control-round" placeholder="Scan Box QR" autofocus>
+                                                                        <input type="text" name="part_scan" id="part_scan" class="form-control form-control-round" style="text-align: center;" placeholder="PART NO / QTY" autofocus>
                                                                         <input type="submit" name="submit_scan" style="display:none">
                                                                     </form>
                                                                 </div>
@@ -304,7 +308,6 @@ date_default_timezone_set('Asia/Jakarta')
                                                                 <thead>
                                                                     <th>NO</th>
                                                                     <th>WAREHOUSE</th>
-                                                                    <th>FROM</th>
                                                                     <th>PART NO FLN</th>
                                                                     <th>PART NAME</th>
                                                                     <th>STOCK IN</th>
@@ -339,7 +342,6 @@ date_default_timezone_set('Asia/Jakarta')
                                                                         <tr>
                                                                             <td><?php echo $no; ?></td>
                                                                             <td><?php echo $nama_area; ?></td>
-                                                                            <td><?php echo $part_asal; ?></td>
                                                                             <td><?php echo $part_no; ?></td>
                                                                             <td><?php echo $part_name; ?></td>
                                                                             <td><?php echo $prod; ?></td>
