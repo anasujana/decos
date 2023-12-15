@@ -315,7 +315,8 @@ date_default_timezone_set('Asia/Jakarta')
                                                                 <tbody>
                                                                     <?php
                                                                     $now_date = date("Y-m-d");
-                                                                    $plan_deliv = mysqli_query($conn, "SELECT s.part_no, 
+                                                                    if ($_GET['kategori'] == 1) {
+                                                                        $plan_deliv = mysqli_query($conn, "SELECT s.part_no, 
                                                                                                                 lp.part_name,
                                                                                                                 s.qty,
                                                                                                                 ar.nama_area,
@@ -325,7 +326,21 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                                         left join list_part lp on s.part_no = lp.part_no
                                                                                                         left join part_prod pd on pd.part_no = s.part_no
                                                                                                         left join area ar on ar.id = pd.id_area
-                                                                                                        where tgl='$now_date' and kategori='$_GET[kategori]'");
+                                                                                                        where tgl='$now_date' and kategori=1");
+                                                                    } else {
+                                                                        $plan_deliv = mysqli_query($conn, "SELECT s.part_no, 
+                                                                                                                    lp.part_name,
+                                                                                                                    s.qty,
+                                                                                                                    ar.nama_area,
+                                                                                                                    ks. jenis_stock
+                                                                                                            FROM wip_out s 
+                                                                                                            left join kategori_stock ks on ks.id = s.kategori
+                                                                                                            left join list_part lp on s.part_no = lp.part_no
+                                                                                                            left join part_prod pd on pd.part_no = s.part_no
+                                                                                                            left join area ar on ar.id = pd.id_area
+                                                                                                            where tgl='$now_date' and kategori='$_GET[kategori]'");
+                                                                    }
+
 
 
 

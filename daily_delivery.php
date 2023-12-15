@@ -126,18 +126,23 @@ date_default_timezone_set('Asia/Jakarta')
                                                 $bln_filter = $_POST['bln_filter'];
                                                 $thn_filter = $_POST['thn_filter'];
 
-                                                $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  SUM(plan) AS plan_total,
-                                                                                                                    SUM(
-                                                                                                                        CASE
-                                                                                                                            WHEN p.tgl = p.tgl_kirim THEN
-                                                                                                                                (SELECT SUM(qty) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
-                                                                                                                            ELSE 0
-                                                                                                                        END
-                                                                                                                    ) AS act_total
-                                                                                                                    FROM plan p 
-                                                                                                            
-                                                                                                                    LEFT JOIN surat_jalan sj on sj.no_delivery=p.no_delivery
-                                                                                                                    WHERE MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl!='$now_date'"));
+                                                $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT 
+                                                                                                                q1.plan_total,
+                                                                                                                q2.act
+                                                                                                            FROM
+                                                                                                                (SELECT 
+                                                                                                                    SUM(plan) AS plan_total
+                                                                                                                FROM 
+                                                                                                                    plan p
+                                                                                                                WHERE 
+                                                                                                                    (MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date')) q1
+                                                                                                            JOIN
+                                                                                                                (SELECT 
+                                                                                                                    SUM(plan) AS act
+                                                                                                                FROM 
+                                                                                                                    plan
+                                                                                                                WHERE 
+                                                                                                                    tgl_kirim IS NOT NULL AND MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date') q2 ON 1=1;"));
 
                                                 $mindel = mysqli_query($conn, "SELECT ar.nama_area,
                                                                                         cs.customer,
@@ -148,21 +153,27 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                         left join customer_deliv cs on cs.id=p.id_customer
                                                                                         left join area ar on ar.id = cs.id_area
                                                                                         join list_part lp on p.part_no = lp.part_no
-                                                                                        WHERE (p.tgl != p.tgl_kirim OR p.tgl_kirim IS NULL) AND tgl!='$now_date' 
+                                                                                        WHERE p.tgl_kirim IS NULL AND tgl!='$now_date'
                                                                                         GROUP BY p.part_no, p.id_customer
                                                                                        ORDER BY cs.customer ASC");
                                             } else {
-                                                $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  SUM(plan) AS plan_total,
-                                                                                                                    SUM(
-                                                                                                                        CASE
-                                                                                                                            WHEN p.tgl = p.tgl_kirim THEN
-                                                                                                                                (SELECT SUM(qty) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
-                                                                                                                            ELSE 0
-                                                                                                                        END
-                                                                                                                    ) AS act_total
-                                                                                                                    FROM plan p 
-                                                                                                                    LEFT JOIN surat_jalan sj on sj.no_delivery=p.no_delivery
-                                                                                                                    WHERE MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl!='$now_date'"));
+                                                $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  
+                                                                                                                q1.plan_total,
+                                                                                                                q2.act
+                                                                                                            FROM
+                                                                                                                (SELECT 
+                                                                                                                    SUM(plan) AS plan_total
+                                                                                                                FROM 
+                                                                                                                    plan p
+                                                                                                                WHERE 
+                                                                                                                    tgl_kirim IS NULL OR MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl != '$now_date') q1
+                                                                                                            JOIN
+                                                                                                                (SELECT 
+                                                                                                                    SUM(plan) AS act
+                                                                                                                FROM 
+                                                                                                                    plan
+                                                                                                                WHERE 
+                                                                                                                    tgl_kirim IS NOT NULL AND MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl != '$now_date') q2 ON 1=1;"));
 
                                                 $mindel = mysqli_query($conn, "SELECT ar.nama_area,
                                                                                         cs.customer,
@@ -173,12 +184,12 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                         left join customer_deliv cs on cs.id=p.id_customer
                                                                                         left join area ar on ar.id = cs.id_area
                                                                                         join list_part lp on p.part_no = lp.part_no
-                                                                                        WHERE (p.tgl != p.tgl_kirim OR p.tgl_kirim IS NULL) AND tgl!='$now_date' 
+                                                                                        WHERE p.tgl_kirim IS NULL AND tgl!='$now_date' 
                                                                                         GROUP BY p.part_no, p.id_customer
                                                                                     ORDER BY cs.customer ASC");
                                             }
                                             $total_plan1 = $total_del_acm['plan_total'];
-                                            $total_act1 = $total_del_acm['act_total'];
+                                            $total_act1 = $total_del_acm['act'];
                                             $total_min1 = $total_plan1 - $total_act1;
 
                                             if ($total_act1 == null) {
@@ -196,7 +207,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                 <h3 class="text-c-purple"><?php echo $total_plan1 ?></h3>
                                                             </div>
                                                             <div class="col-4 text-right">
-                                                                <img class="img-40" src="assets\images\plan.png" alt="">
+                                                                <!-- <img class="img-40" src="assets\images\plan.png" alt=""> -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -219,7 +230,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                 <h3 class="text-c-green"><?php echo $total_act1 ?></h3>
                                                             </div>
                                                             <div class="col-4 text-right">
-                                                                <img class="img-40" src="assets\images\act.png" alt="">
+                                                                <!-- <img class="img-40" src="assets\images\act.png" alt=""> -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -242,7 +253,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                 <h3 class="text-c-red"><?php echo $total_min1 ?></h3>
                                                             </div>
                                                             <div class="col-4 text-right">
-                                                                <img class="img-40" src="assets\images\minus.png" alt="">
+                                                                <!-- <img class="img-40" src="assets\images\minus.png" alt=""> -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -265,7 +276,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                 <h3 class="text-c-blue"><?php echo $achtotal . "%" ?></h3>
                                                             </div>
                                                             <div class="col-4 text-right">
-                                                                <img class="img-40" src="assets\images\ach.png" alt="">
+                                                                <!-- <img class="img-40" src="assets\images\ach.png" alt=""> -->
                                                             </div>
                                                         </div>
                                                     </div>
@@ -287,7 +298,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                     <div class="card-header">
                                                         <form action="" method="post">
                                                             <div class="form-group row">
-                                                                <div class="col-sm-3">
+                                                                <div class="col-sm-2">
                                                                     <select id="bln_filter" name="bln_filter" class="form-control">
                                                                         <?php
                                                                         $filterBulan = isset($_POST['bln_filter']) ? $_POST['bln_filter'] : ''; // Ganti $_POST dengan sumber data yang sesuai
@@ -307,7 +318,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                     </select>
 
                                                                 </div>
-                                                                <div class="col-sm-3">
+                                                                <div class="col-sm-2">
                                                                     <select name='thn_filter' class="form-control" id="inlineFormCustomSelect">
                                                                         <?php
                                                                         $mulai = date('Y') - 5;
@@ -612,7 +623,7 @@ date_default_timezone_set('Asia/Jakarta')
                         echo implode(",", $ach_data);
                         ?>]
             }, {
-                name: 'target (100%)',
+                name: 'target',
                 type: 'line',
                 data: [<?php
                         foreach ($deliv_tgl as $data_tgl) {
@@ -801,10 +812,23 @@ date_default_timezone_set('Asia/Jakarta')
             tooltip: {
                 fixed: {
                     enabled: true,
-                    position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+                    position: 'topLeft',
                     offsetY: 30,
                     offsetX: 60
                 },
+                y: {
+                    formatter: function(val, opts) {
+                        if (opts.seriesIndex === 2 || opts.seriesIndex === 3) {
+                            if (val % 1 === 0) {
+                                return val.toFixed(0) + "%";
+                            } else {
+                                return val.toFixed(1) + "%";
+                            }
+                        }
+                        return val;
+                    }
+                },
+                enabledOnSeries: [0, 1, 2],
             },
             legend: {
                 horizontalAlign: 'left',

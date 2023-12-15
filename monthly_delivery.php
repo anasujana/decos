@@ -1,8 +1,8 @@
 <?php
-    session_start();
-    include('koneksi/koneksi.php');
-    date_default_timezone_set('Asia/Jakarta')
-?> 
+session_start();
+include('koneksi/koneksi.php');
+date_default_timezone_set('Asia/Jakarta')
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,107 +40,106 @@
     <!-- Style.css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
+
 <body>
-<?php
+    <?php
     include('koneksi/koneksi.php');
-?>  
-<!-- Pre-loader start -->
-<div class="theme-loader">
-    <div class="loader-track">
-        <div class="preloader-wrapper">
-            <div class="spinner-layer spinner-blue">
-                <div class="circle-clipper left">
-                    <div class="circle"></div>
+    ?>
+    <!-- Pre-loader start -->
+    <div class="theme-loader">
+        <div class="loader-track">
+            <div class="preloader-wrapper">
+                <div class="spinner-layer spinner-blue">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
                 </div>
-                <div class="gap-patch">
-                    <div class="circle"></div>
+                <div class="spinner-layer spinner-red">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
                 </div>
-                <div class="circle-clipper right">
-                    <div class="circle"></div>
+
+                <div class="spinner-layer spinner-yellow">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="spinner-layer spinner-red">
-                <div class="circle-clipper left">
-                    <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                    <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                    <div class="circle"></div>
-                </div>
-            </div>
-        
-            <div class="spinner-layer spinner-yellow">
-                <div class="circle-clipper left">
-                    <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                    <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                    <div class="circle"></div>
-                </div>
-            </div>
-        
-            <div class="spinner-layer spinner-green">
-                <div class="circle-clipper left">
-                    <div class="circle"></div>
-                </div>
-                <div class="gap-patch">
-                    <div class="circle"></div>
-                </div>
-                <div class="circle-clipper right">
-                    <div class="circle"></div>
+
+                <div class="spinner-layer spinner-green">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Pre-loader end -->
-<div id="pcoded" class="pcoded">
-    <div class="pcoded-container navbar-wrapper">
-        <?php
-        include('element/topbar.php');
-        ?>
-        <div class="pcoded-main-container">
-            <div class="pcoded-wrapper">
-                <?php
-                include('element/navbar.php');
-                ?>
-                <div class="pcoded-content">
-                   <div class="pcoded-inner-content">
-                        <!-- Main-body start -->
-                        <div class="main-body">
-                            <div class="page-wrapper">
-                                <!-- Page-body start -->
-                                <div class="page-body">
-                                    <div class="row">
-                                          <!-- task, page, download counter  start -->
+    <!-- Pre-loader end -->
+    <div id="pcoded" class="pcoded">
+        <div class="pcoded-container navbar-wrapper">
+            <?php
+            include('element/topbar.php');
+            ?>
+            <div class="pcoded-main-container">
+                <div class="pcoded-wrapper">
+                    <?php
+                    include('element/navbar.php');
+                    ?>
+                    <div class="pcoded-content">
+                        <div class="pcoded-inner-content">
+                            <!-- Main-body start -->
+                            <div class="main-body">
+                                <div class="page-wrapper">
+                                    <!-- Page-body start -->
+                                    <div class="page-body">
+                                        <div class="row">
+                                            <!-- task, page, download counter  start -->
                                             <?php
-                                                $now_month = date("m");
-                                                $now_year = date("Y");
-                                                mysqli_query($conn,"CREATE TEMPORARY TABLE acm_wh_total SELECT  SUM(plan) AS plan_total,
+                                            $now_month = date("m");
+                                            $now_year = date("Y");
+                                            mysqli_query($conn, "CREATE TEMPORARY TABLE acm_wh_total SELECT  SUM(plan) AS plan_total,
                                                                                                                 SUM((SELECT SUM(qty) FROM prepare pr WHERE pr.part_no_prep = p.part_no
                                                                                                                                                         AND pr.no_delivery=p.no_delivery)) 
                                                                                                                 AS act_total
                                                                                                                 FROM plan p 
-                                                                                                        
-                                                                                                                LEFT JOIN surat_jalan sj on sj.no_delivery=p.no_delivery
                                                                                                                 WHERE MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year'");
-                                                $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM acm_wh_total"));
-                                                $total_plan1 = $total_del_acm['plan_total'];
-                                                $total_act1 = $total_del_acm['act_total'];
-                                                $total_min1 = $total_plan1-$total_act1;
+                                            $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM acm_wh_total"));
+                                            $total_plan1 = $total_del_acm['plan_total'];
+                                            $total_act1 = $total_del_acm['act_total'];
+                                            $total_min1 = $total_plan1 - $total_act1;
 
-                                                if($total_act1==null){
-                                                    $achtotal = "0";
-                                                }else{
-                                                    $achtotal = ($total_act1/$total_plan1)*100;
-                                                    $achtotal = round($achtotal,1);
-                                                }
+                                            if ($total_act1 == null) {
+                                                $achtotal = "0";
+                                            } else {
+                                                $achtotal = ($total_act1 / $total_plan1) * 100;
+                                                $achtotal = round($achtotal, 1);
+                                            }
                                             ?>
-                                          <div class="col-xl-3 col-md-6">
+                                            <div class="col-xl-3 col-md-6">
                                                 <div class="card">
                                                     <div class="card-block">
                                                         <div class="row align-items-center">
@@ -200,7 +199,7 @@
                                                             <div class="col-9">
                                                                 <p class="text-white m-b-0">Total Minus</p>
                                                             </div>
-                                                            <div class="col-3 text-right">                                                                                                      
+                                                            <div class="col-3 text-right">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -211,7 +210,7 @@
                                                     <div class="card-block">
                                                         <div class="row align-items-center">
                                                             <div class="col-8">
-                                                                <h4 class="text-c-blue"><?php echo $achtotal."%" ?></h4>
+                                                                <h4 class="text-c-blue"><?php echo $achtotal . "%" ?></h4>
                                                             </div>
                                                             <div class="col-4 text-right">
                                                             </div>
@@ -229,7 +228,7 @@
                                                 </div>
                                             </div>
                                             <!-- task, page, download counter  end -->
-                                          <!--  plan vs act deliv -->
+                                            <!--  plan vs act deliv -->
                                             <div class="col-xl-12 col-md-12">
                                                 <div class="card">
                                                     <div class="card-block">
@@ -240,17 +239,17 @@
                                             <!--  plan vs act deliv -->
                                         </div>
                                     </div>
-                                <!-- Page-body end -->
+                                    <!-- Page-body end -->
+                                </div>
+                                <div id="styleSelector"> </div>
                             </div>
-                            <div id="styleSelector"> </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-    
+
     <!-- Required Jquery -->
     <script type="text/javascript" src="assets/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="assets/js/jquery-ui/jquery-ui.min.js "></script>
@@ -276,16 +275,16 @@
     <script src="assets/js/vertical-layout.min.js "></script>
     <!-- custom js -->
     <script type="text/javascript" src="assets/js/script.js "></script>
-                                                
+
     <script>
         var options = {
             series: [{
-            name: 'plan',
-            type: 'column',
-            data: [<?php
+                name: 'plan',
+                type: 'column',
+                data: [<?php
                         $now_month = date("m");
                         $now_year = date("Y");
-                                                            
+
                         $deliv_tgl = mysqli_query($conn, "SELECT MONTH(tgl) as bln,
                                                             SUM(plan) AS planing,
                                                             SUM((SELECT SUM(qty) FROM prepare pr WHERE pr.part_no_prep = p.part_no
@@ -301,21 +300,21 @@
                             $planing_data[] = $data_tgl['planing'];
                         }
                         echo implode(",", $planing_data);
-                    ?>]
+                        ?>]
             }, {
-            name: 'actual',
-            type: 'column',
-            data: [<?php
+                name: 'actual',
+                type: 'column',
+                data: [<?php
                         $actual_data = [];
                         foreach ($deliv_tgl as $data_tgl) {
                             $actual_data[] = $data_tgl['actual'];
                         }
                         echo implode(",", $actual_data);
-                    ?>]
+                        ?>]
             }, {
-            name: 'achievement',
-            type: 'line',
-            data: [<?php
+                name: 'achievement',
+                type: 'line',
+                data: [<?php
                         $ach_data = [];
                         foreach ($deliv_tgl as $data_tgl) {
                             $actual = $data_tgl['actual'];
@@ -329,11 +328,11 @@
                             $ach_data[] = $achtotal;
                         }
                         echo implode(",", $ach_data);
-                    ?> ]
+                        ?>]
             }, {
-            name: 'target',
-            type: 'line',
-            data: [<?php
+                name: 'target',
+                type: 'line',
+                data: [<?php
                         $ach_data = [];
                         foreach ($deliv_tgl as $data_tgl) {
                             $actual = $data_tgl['actual'];
@@ -347,36 +346,35 @@
                             $ach_data[] = $achtotal;
                         }
                         echo 100;
-                    ?> ]
-            }
-            ],
+                        ?>]
+            }],
             chart: {
-            height: 350,
-            type: 'line',
-            stacked: false
+                height: 350,
+                type: 'line',
+                stacked: false
             },
             plotOptions: {
                 bar: {
-                dataLabels: {
-                    orientation: 'vertical',
-                    position: 'center' // bottom/center/top
-                }
+                    dataLabels: {
+                        orientation: 'vertical',
+                        position: 'center' // bottom/center/top
+                    }
                 }
             },
             dataLabels: {
                 style: {
-                colors: ['#E74C3C']
+                    colors: ['#E74C3C']
                 },
                 offsetY: 15, // play with this value
             },
             dataLabels: {
                 enabled: true,
-                enabledOnSeries: [0,1,2], // Aktifkan dataLabels untuk seri "Achievement" (indeks 2)
+                enabledOnSeries: [0, 1, 2], // Aktifkan dataLabels untuk seri "Achievement" (indeks 2)
                 textAnchor: 'start',
                 textOrientation: 'vertical',
                 formatter: function(val, opts) {
                     if (opts.seriesIndex === 2) { // Hanya format label untuk series "ach"
-                    return val.toFixed() + "%";
+                        return val.toFixed() + "%";
                     }
                     return val;
                 },
@@ -397,104 +395,121 @@
                 },
             },
             stroke: {
-            width: [1, 1, 4]
+                width: [1, 1, 4]
             },
             title: {
-            text: 'Monthly achievement 2023',
-            align: 'left',
-            offsetX: 0
+                text: 'Monthly achievement 2023',
+                align: 'left',
+                offsetX: 0
             },
             xaxis: {
-            categories: [<?php
-                                foreach($deliv_tgl AS $data_tgl){
-                                $tgl_deliv = $data_tgl['bln'];
-                            echo "'".$tgl_deliv."'".",";
-                            }
-                            ?>],
+                categories: [<?php
+                                foreach ($deliv_tgl as $data_tgl) {
+                                    $tgl_deliv = $data_tgl['bln'];
+                                    echo "'" . $tgl_deliv . "'" . ",";
+                                }
+                                ?>],
             },
-            yaxis: [
-            {
-                axisTicks: {
-                show: true,
+            yaxis: [{
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#008FFB'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#008FFB',
+                        }
+                    },
+                    title: {
+                        text: "plan qty",
+                        style: {
+                            color: '#008FFB',
+                        }
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
                 },
-                axisBorder: {
-                show: true,
-                color: '#008FFB'
+                {
+                    seriesName: 'plan',
+                    opposite: true,
+                    axisTicks: {
+                        show: false,
+                    },
+                    axisBorder: {
+                        show: false,
+                        color: '#00E396'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#00E396',
+                        }
+                    },
+                    title: {
+                        text: "act qty",
+                        style: {
+                            color: '#00E396',
+                        }
+                    },
                 },
-                labels: {
-                style: {
-                    colors: '#008FFB',
-                }
+                {
+                    seriesName: 'ach',
+                    opposite: true,
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#FEB019'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#FEB019',
+                        },
+                    },
+                    title: {
+                        text: "achievement",
+                        style: {
+                            color: '#FEB019',
+                        }
+                    }
                 },
-                title: {
-                text: "plan qty",
-                style: {
-                    color: '#008FFB',
-                }
-                },
-                tooltip: {
-                enabled: true
-                }
-            },
-            {
-                seriesName: 'plan',
-                opposite: true,
-                axisTicks: {
-                show: false,
-                },
-                axisBorder: {
-                show: false,
-                color: '#00E396'
-                },
-                labels: {
-                style: {
-                    colors: '#00E396',
-                }
-                },
-                title: {
-                text: "act qty",
-                style: {
-                    color: '#00E396',
-                }
-                },
-            },
-            {
-                seriesName: 'ach',
-                opposite: true,
-                axisTicks: {
-                show: true,
-                },
-                axisBorder: {
-                show: true,
-                color: '#FEB019'
-                },
-                labels: {
-                style: {
-                    colors: '#FEB019',
-                },
-                },
-                title: {
-                text: "achievement",
-                style: {
-                    color: '#FEB019',
-                }
-                }
-            },
             ],
             tooltip: {
-            fixed: {
-                enabled: true,
-                position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
-                offsetY: 30,
-                offsetX: 60
-            },
+                fixed: {
+                    enabled: true,
+                    position: 'topLeft',
+                    offsetY: 30,
+                    offsetX: 60
+                },
+                x: {
+                    formatter: function(val) {
+                        return val;
+                    }
+                },
+                y: {
+                    formatter: function(val, opts) {
+                        if (opts.seriesIndex === 2 || opts.seriesIndex === 3) {
+                            if (val % 1 === 0) {
+                                return val.toFixed(0) + "%";
+                            } else {
+                                return val.toFixed(1) + "%";
+                            }
+                        }
+                        return val;
+                    }
+                },
+                enabledOnSeries: [0, 1, 2],
             },
             legend: {
-            horizontalAlign: 'left',
-            offsetX: 40
+                horizontalAlign: 'left',
+                offsetX: 40
             },
             redrawOnParentResize: true
-            };
+        };
         var chart = new ApexCharts(document.querySelector("#deliv_tgl"), options);
         chart.render();
     </script>
@@ -505,7 +520,7 @@
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
         });
-        
+
         $(document).ready(function() {
             $('[data-toggle="popover"]').popover({
                 html: true,

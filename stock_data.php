@@ -6,29 +6,29 @@ $row = 0;
 $now_date = date("Y-m-d");
 $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                         SELECT
-                                                            ROW_NUMBER() OVER (PARTITION BY sar.part_no ORDER BY sa.qty DESC) AS no,
+                                                            DENSE_RANK() OVER (PARTITION BY sar.part_no ORDER BY sa.tgl_updated DESC) AS rnk,
                                                             ar.nama_area AS wh,
                                                             cs.customer,
                                                             pp.part_no,
                                                             lp.part_name,
-                                                            sa.qty as total_stock,
+                                                            sa.qty AS total_stock,
                                                             sa.del_day AS deliv_day,
-                                                            MAX(CASE WHEN sar.kategori = 1 THEN sar.current_stock ELSE 0 END) AS stock_fg,
-                                                            MAX(CASE WHEN sar.kategori = 2 THEN sar.current_stock ELSE 0 END) AS wip_rm,
-                                                            MAX(CASE WHEN sar.kategori = 3 THEN sar.current_stock ELSE 0 END) AS wip_produksi,
+                                                            MAX(CASE WHEN sar.kategori = 1 THEN COALESCE(sar.current_stock, 0) END) AS stock_fg,
+                                                            MAX(CASE WHEN sar.kategori = 2 THEN COALESCE(sar.current_stock, 0) END) AS wip_rm,
+                                                            MAX(CASE WHEN sar.kategori = 3 THEN COALESCE(sar.current_stock, 0) END) AS wip_produksi,
                                                             pl.plan,
                                                             sa.std_stock AS std_stok,
                                                             sa.remark,
                                                             '' AS action
-                                                        FROM list_part lp
+                                                        FROM 
+                                                            list_part lp
                                                             LEFT JOIN stock_all sa ON sa.part_no = lp.part_no
-                                                            LEFT JOIN stock_area sar ON sar.part_no = lp.part_no
+                                                            LEFT JOIN stock_area sar ON sar.part_no = lp.part_no AND sar.kategori IN (1, 2, 3)
                                                             LEFT JOIN kategori_stock ks ON ks.id = sar.kategori
                                                             LEFT JOIN part_prod pp ON lp.part_no = pp.part_no
                                                             LEFT JOIN customer_prod cs ON pp.customer_id = cs.id
                                                             LEFT JOIN area ar ON ar.id = pp.id_area
-                                                            LEFT JOIN plan pl on sar.part_no = pl.part_no
-                                                        WHERE sar.kategori IN (1, 2, 3) AND sar.tgl_updated = '$now_date' AND pl.tgl = '$now_date'
+                                                            LEFT JOIN plan pl ON sar.part_no = pl.part_no AND pl.tgl = '2023-12-15'
                                                         GROUP BY
                                                             sar.part_no,
                                                             ar.nama_area,
@@ -38,9 +38,26 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                             sa.qty,
                                                             sa.del_day,
                                                             sa.std_stock,
-                                                            sa.remark
+                                                            sa.remark,
+                                                            sa.tgl_updated
                                                     )
-                                                    SELECT * FROM RankedData WHERE no = 1;
+                                                    SELECT 
+                                                        wh,
+                                                        customer,
+                                                        part_no,
+                                                        part_name,
+                                                        total_stock,
+                                                        deliv_day,
+                                                        stock_fg,
+                                                        wip_rm,
+                                                        wip_produksi,
+                                                        plan,
+                                                        std_stok,
+                                                        remark,
+                                                        action
+                                                    FROM RankedData
+                                                    WHERE rnk = 1
+                                                    ORDER BY total_stock DESC;
                                         ");
 
 $no = 1;
