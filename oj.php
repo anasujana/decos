@@ -304,41 +304,42 @@ date_default_timezone_set('Asia/Jakarta')
                                                     </div>
                                                     <div class="card-block table-border-style">
                                                         <div class="table-responsive">
-                                                            <table class="table table-striped">
+                                                            <table class="table table-striped datas">
                                                                 <thead>
                                                                     <th>NO</th>
                                                                     <th>WAREHOUSE</th>
                                                                     <th>PART NO FLN</th>
                                                                     <th>PART NAME</th>
                                                                     <th>STOCK IN</th>
+                                                                    <th>ACTION</th>
                                                                 </thead>
                                                                 <tbody>
                                                                     <?php
                                                                     $now_date = date("Y-m-d");
                                                                     if ($_GET['kategori'] == 1) {
-                                                                        $plan_deliv = mysqli_query($conn, "SELECT s.part_no, 
-                                                                                                                lp.part_name,
-                                                                                                                s.qty,
-                                                                                                                ar.nama_area,
-                                                                                                                ks. jenis_stock
-                                                                                                        FROM stock_in s 
-                                                                                                        left join kategori_stock ks on ks.id = s.kategori
-                                                                                                        left join list_part lp on s.part_no = lp.part_no
-                                                                                                        left join part_prod pd on pd.part_no = s.part_no
-                                                                                                        left join area ar on ar.id = pd.id_area
-                                                                                                        where tgl='$now_date' and kategori=1");
-                                                                    } else {
-                                                                        $plan_deliv = mysqli_query($conn, "SELECT s.part_no, 
+                                                                        $plan_deliv = mysqli_query($conn, "SELECT pd.part_no, 
                                                                                                                     lp.part_name,
+                                                                                                                    COALESCE(s.qty, 0) AS stock_in,
                                                                                                                     s.qty,
                                                                                                                     ar.nama_area,
-                                                                                                                    ks. jenis_stock
-                                                                                                            FROM wip_out s 
-                                                                                                            left join kategori_stock ks on ks.id = s.kategori
-                                                                                                            left join list_part lp on s.part_no = lp.part_no
-                                                                                                            left join part_prod pd on pd.part_no = s.part_no
-                                                                                                            left join area ar on ar.id = pd.id_area
-                                                                                                            where tgl='$now_date' and kategori='$_GET[kategori]'");
+                                                                                                                    ks.jenis_stock
+                                                                                                            FROM part_prod pd
+                                                                                                            LEFT JOIN list_part lp ON lp.part_no = pd.part_no
+                                                                                                            LEFT JOIN stock_in s ON pd.part_no = s.part_no AND s.tgl = '$now_date' AND s.kategori = 1
+                                                                                                            LEFT JOIN kategori_stock ks ON ks.id = s.kategori
+                                                                                                            LEFT JOIN area ar ON ar.id = pd.id_area");
+                                                                    } else {
+                                                                        $plan_deliv = mysqli_query($conn, "SELECT pd.part_no, 
+                                                                                                                    lp.part_name,
+                                                                                                                    COALESCE(s.qty, 0) AS stock_in,
+                                                                                                                    ar.nama_area,
+                                                                                                                    ks.jenis_stock
+                                                                                                            FROM part_prod pd
+                                                                                                            LEFT JOIN list_part lp ON lp.part_no = pd.part_no
+                                                                                                            LEFT JOIN wip_out s ON pd.part_no = s.part_no AND s.tgl = '$now_date' AND s.kategori = '$_GET[kategori]'
+                                                                                                            LEFT JOIN kategori_stock ks ON ks.id = s.kategori
+                                                                                                            LEFT JOIN area ar ON ar.id = pd.id_area
+                                                                                                            ");
                                                                     }
 
 
@@ -351,7 +352,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                         $nama_area = $data1['nama_area'];
                                                                         $part_no = $data1['part_no'];
                                                                         $part_name = $data1['part_name'];
-                                                                        $prod = $data1['qty'];
+                                                                        $prod = $data1['stock_in'];
                                                                         $part_asal = $data1['jenis_stock'];
                                                                     ?>
                                                                         <tr>
@@ -360,6 +361,9 @@ date_default_timezone_set('Asia/Jakarta')
                                                                             <td><?php echo $part_no; ?></td>
                                                                             <td><?php echo $part_name; ?></td>
                                                                             <td><?php echo $prod; ?></td>
+                                                                            <td>
+                                                                                <button type='button' class='btn btn-icon btn-danger btn-circle btn-sm edit' data-toggle='modal' data-id='$part_no' data-nama='$part_name' data-qtydeliv='$deliv_day' data-qtystd='$std_stock' data-target='#editStock'><i class="ti-minus"></i></button>
+                                                                            </td>
                                                                         </tr>
                                                                     <?php
                                                                         $no++;
@@ -385,6 +389,42 @@ date_default_timezone_set('Asia/Jakarta')
         </div>
     </div>
 
+    <!-- Modal kurangi stock-->
+    <div class="modal fade" id="editStock" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Kurangi Stock</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="update_stock.php" method="post">
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="Nama">Part No</label>
+                                <input type="text" name="part_no_edit" id="part_no_data" class="form-control form-control-round" readonly>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="Nama">Part Name</label>
+                                <input type="text" name="part_name_edit" id="part_name_data" class="form-control form-control-round" readonly>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="Nama">Kurangi Stock</label>
+                                <input type="text" name="deliv_edit" id="deliv_data" class="form-control form-control-round">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-round" data-dismiss="modal">Close</button>
+                            <input type="submit" name="save" class="btn btn-primary btn-round" value="Save">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal end-->
     <!-- waves js -->
     <script src="assets/pages/waves/js/waves.min.js"></script>
     <!-- jquery slimscroll js -->

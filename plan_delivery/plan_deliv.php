@@ -1,8 +1,8 @@
 <?php
-    session_start();
-    include('../koneksi/koneksi.php');
-    date_default_timezone_set('Asia/Jakarta')
-?> 
+session_start();
+include('../koneksi/koneksi.php');
+date_default_timezone_set('Asia/Jakarta')
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,49 +38,49 @@
     <!-- Style.css -->
     <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
     <script src="../assets/js/swetalert2/cdn.jsdelivr.net_npm_sweetalert2@11"></script>
-  </head>
+</head>
 
-  <body>
-  <?php
+<body>
+    <?php
     include('../koneksi/koneksi.php');
-    ?>  
+    ?>
 
-  <div id="pcoded" class="pcoded">
-      <div class="pcoded-overlay-box"></div>
-      <div class="pcoded-container navbar-wrapper">
-        
-        <?php
-        include('../element/topbar.php');
-        ?>
+    <div id="pcoded" class="pcoded">
+        <div class="pcoded-overlay-box"></div>
+        <div class="pcoded-container navbar-wrapper">
 
-          <div class="pcoded-main-container">
-              <div class="pcoded-wrapper">
-                
-                <?php
-                include('../element/navbar_admin.php');
-                ?>
-                  
-                <div class="pcoded-content">
-                      <!-- Page-header start -->
-                      <div class="page-header">
-                          <div class="page-block">
-                              <div class="row align-items-center">
-                                  <div class="col-md-8">
-                                      <div class="page-header-title">
-                                          <h5 class="m-b-10">Preparation</h5>
-                                          <p class="m-b-0">Planing Delivery</p>
-                                      </div>
-                                  </div>
-                                  <div class="col-md-4">
-                                      <ul class="breadcrumb-title">
-                                          <li class=""><a href="../chekshet_delivery.php"><i class="ti-angle-double-left"></i> BACK</a>
-                                          </li>
-                                      </ul>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                      <!-- Page-header end -->
+            <?php
+            include('../element/topbar.php');
+            ?>
+
+            <div class="pcoded-main-container">
+                <div class="pcoded-wrapper">
+
+                    <?php
+                    include('../element/navbar_admin.php');
+                    ?>
+
+                    <div class="pcoded-content">
+                        <!-- Page-header start -->
+                        <div class="page-header">
+                            <div class="page-block">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="page-header-title">
+                                            <h5 class="m-b-10">Preparation</h5>
+                                            <p class="m-b-0">Planing Delivery</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <ul class="breadcrumb-title">
+                                            <li class=""><a href="../chekshet_delivery.php"><i class="ti-angle-double-left"></i> BACK</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Page-header end -->
                         <div class="pcoded-inner-content">
                             <!-- Main-body start -->
                             <div class="main-body">
@@ -88,60 +88,60 @@
                                     <!-- Page-body start -->
                                     <div class="page-body">
                                         <div class="row">
-                                        <div class="col-md-12 d-print-none">
+                                            <div class="col-md-12 d-print-none">
                                                 <div class="card shadow mb-12">
                                                     <div class="card-header">
                                                         <h5>Add Plan Delivery</h5>
                                                     </div>
-                                                    <div class="card-body">                                                                                                                                                 
+                                                    <div class="card-body">
                                                         <form action="" method="POST">
-                                                            <input type="hidden" name="cust_deliv" class="form-control" 
-                                                                value="<?php if(isset($_POST["customer"])){
-                                                                                echo $_POST["customer"]; }; 
-                                                                        ?>">
-                                                            <input type="hidden" name="tgl_kirim" class="form-control"
-                                                                value="<?php if(isset($_POST["tgl_deliv"])){
-                                                                                echo $_POST["tgl_deliv"]; }; 
-                                                                        ?>">
-                                                            <input type="hidden" name="cycle_kirim" class="form-control"
-                                                                value="<?php if(isset($_POST["cycle_deliv"])){ 
-                                                                                echo $_POST["cycle_deliv"];};
-                                                                        ?>">
+                                                            <input type="hidden" name="cust_deliv" class="form-control" value="<?php if (isset($_POST["customer"])) {
+                                                                                                                                    echo $_POST["customer"];
+                                                                                                                                };
+                                                                                                                                ?>">
+                                                            <input type="hidden" name="tgl_kirim" class="form-control" value="<?php if (isset($_POST["tgl_deliv"])) {
+                                                                                                                                    echo $_POST["tgl_deliv"];
+                                                                                                                                };
+                                                                                                                                ?>">
+                                                            <input type="hidden" name="cycle_kirim" class="form-control" value="<?php if (isset($_POST["cycle_deliv"])) {
+                                                                                                                                    echo $_POST["cycle_deliv"];
+                                                                                                                                };
+                                                                                                                                ?>">
 
                                                             <?php
-                                                            if(isset($_POST['customer'])){
-                                                            $customer = $_POST['customer'];
+                                                            if (isset($_POST['customer'])) {
+                                                                $customer = $_POST['customer'];
 
-                                                            $tabel = mysqli_query ($conn,"SELECT pd.part_no, lp.part_name FROM part_deliv pd 
+                                                                $tabel = mysqli_query($conn, "SELECT pd.part_no, lp.part_name FROM part_deliv pd 
                                                                                                                             inner join list_part lp on pd.part_no=lp.part_no
                                                                                                                             WHERE pd.customer_id='$customer' and status = 'aktif' order by lp.part_no asc");
-                                                            
-                                                            foreach($tabel AS $data){
-                                                                $part_no = $data['part_no'];
-                                                                $part_name = $data['part_name']; 
-                                                            ?> 
 
-                                                            <div class="form-row">
-                                                                <div class="form-group col-md-4">
-                                                                    <label for="Nama">Part Number</label>
-                                                                    <input type="text" value="<?php echo $part_no;?>" class="form-control form-control-round font-weight-bold" disabled>
-                                                                </div>
-                                                                <div class="form-group col-md-4">
-                                                                    <label for="inputpictagane">Part Name</label>
-                                                                    <input type="text" name="" class="form-control form-control-round font-weight-bold" value="<?php echo $part_name;?>" disabled>
-                                                                </div>  
-                                                                <div class="form-group col-md-4">
-                                                                    <label for="">Qty</label>
-                                                                    <input type="number" name="<?php echo $part_no;?>" class="form-control form-control-round" value="" autofocus>
-                                                                </div>
-                                                            </div>
-                                                            <?php
-                                                            }
+                                                                foreach ($tabel as $data) {
+                                                                    $part_no = $data['part_no'];
+                                                                    $part_name = $data['part_name'];
                                                             ?>
-                                                            <div class="float-right">
-                                                                <button type="reset" class="btn btn-secondary btn-round">Reset</button>&nbsp;
-                                                                <input type="submit" class="btn btn-primary btn-round" value="Save">
-                                                            </div>
+
+                                                                    <div class="form-row">
+                                                                        <div class="form-group col-md-4">
+                                                                            <label for="Nama">Part Number</label>
+                                                                            <input type="text" value="<?php echo $part_no; ?>" class="form-control form-control-round font-weight-bold" disabled>
+                                                                        </div>
+                                                                        <div class="form-group col-md-4">
+                                                                            <label for="inputpictagane">Part Name</label>
+                                                                            <input type="text" name="" class="form-control form-control-round font-weight-bold" value="<?php echo $part_name; ?>" disabled>
+                                                                        </div>
+                                                                        <div class="form-group col-md-4">
+                                                                            <label for="">Qty</label>
+                                                                            <input type="number" name="<?php echo $part_no; ?>" class="form-control form-control-round" value="" autofocus>
+                                                                        </div>
+                                                                    </div>
+                                                                <?php
+                                                                }
+                                                                ?>
+                                                                <div class="float-right">
+                                                                    <button type="reset" class="btn btn-secondary btn-round">Reset</button>&nbsp;
+                                                                    <input type="submit" class="btn btn-primary btn-round" value="Save">
+                                                                </div>
                                                             <?php
                                                             }
                                                             ?>
@@ -149,34 +149,34 @@
                                                         </form>
 
                                                         <?php
-                                                            // cek ada/tidak nya data
-                                                            if(isset($_POST['cust_deliv']) and isset($_POST['tgl_kirim']) and isset($_POST['cycle_kirim'])){
+                                                        // cek ada/tidak nya data
+                                                        if (isset($_POST['cust_deliv']) and isset($_POST['tgl_kirim']) and isset($_POST['cycle_kirim'])) {
                                                             // terima data   
-                                                            
+
                                                             $cust_deliv = $_POST['cust_deliv'];
                                                             $tgl_kirim = $_POST['tgl_kirim'];
                                                             $tgl_deliv = date('Ymd', strtotime($tgl_kirim));
-                                                            $jam = date("His"); 
+                                                            $jam = date("His");
                                                             $cycle_kirim = $_POST['cycle_kirim'];
 
-                                                            $cycle = mysqli_fetch_assoc(mysqli_query($conn,"SELECT no_ct FROM cycle_deliv where id='$cycle_kirim'"));
-                                                            $custom = mysqli_fetch_assoc(mysqli_query($conn,"SELECT id, customer FROM customer_deliv where id='$cust_deliv'"));
-                                                            
+                                                            $cycle = mysqli_fetch_assoc(mysqli_query($conn, "SELECT no_ct FROM cycle_deliv where id='$cycle_kirim'"));
+                                                            $custom = mysqli_fetch_assoc(mysqli_query($conn, "SELECT id, customer FROM customer_deliv where id='$cust_deliv'"));
+
                                                             $date_now = date("Y-m-d H:i:s");
-                                                            $no_deliv = strtotime($date_now)."0";
-                                                            
+                                                            $no_deliv = strtotime($date_now) . "0";
+
                                                             // loop
-                                                            $plan_delivery = mysqli_query ($conn,"SELECT * FROM part_deliv WHERE customer_id='$cust_deliv'");                   
-                                                            
-                                                            foreach($plan_delivery AS $data){
-                                                            $part_no = $data['part_no'];
-                                                            $qty_plan = $_POST[$part_no];
-                                                                
-                                                                if($qty_plan!=NULL){
-                                                                // tambahkan ke databasea
-                                                                $tambah = mysqli_query($conn,"INSERT INTO plan VALUES (NULL,'$part_no','$tgl_kirim','$cust_deliv','$cycle_kirim','$qty_plan','$no_deliv')");
+                                                            $plan_delivery = mysqli_query($conn, "SELECT * FROM part_deliv WHERE customer_id='$cust_deliv'");
+
+                                                            foreach ($plan_delivery as $data) {
+                                                                $part_no = $data['part_no'];
+                                                                $qty_plan = $_POST[$part_no];
+
+                                                                if ($qty_plan != NULL) {
+                                                                    // tambahkan ke databasea
+                                                                    $tambah = mysqli_query($conn, "INSERT INTO plan VALUES (NULL,'$part_no','$tgl_kirim','$cust_deliv','$cycle_kirim','$qty_plan','$no_deliv',NULL)");
                                                                 }
-                                                            } 
+                                                            }
                                                             echo '<script languange="javascript">
                                                                         swal.fire({
                                                                             title: "Success",
@@ -186,8 +186,8 @@
                                                                         }).then(function(){
                                                                             window.location.href="../chekshet_delivery.php";
                                                                             });
-                                                                    </script>'; 
-                                                            }
+                                                                    </script>';
+                                                        }
                                                         ?>
                                                     </div>
                                                 </div>
@@ -204,7 +204,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Required Jquery -->
     <script type="text/javascript" src="../assets/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="../assets/js/jquery-ui/jquery-ui.min.js "></script>

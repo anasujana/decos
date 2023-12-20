@@ -252,28 +252,29 @@ date_default_timezone_set('Asia/Jakarta')
                                                     </div>
                                                     <div class="card-block table-border-style">
                                                         <div class="table-responsive">
-                                                            <table class="table table-striped">
+                                                            <table class="table table-striped datas">
                                                                 <thead>
                                                                     <th>NO</th>
                                                                     <th>WAREHOUSE</th>
                                                                     <th>PART NO FLN</th>
                                                                     <th>PART NAME</th>
                                                                     <th>WIP IN</th>
+                                                                    <th>ACTION</th>
                                                                 </thead>
                                                                 <tbody>
                                                                     <?php
                                                                     $now_date = date("Y-m-d");
-                                                                    $plan_deliv = mysqli_query($conn, "SELECT s.part_no, 
+                                                                    $plan_deliv = mysqli_query($conn, "SELECT pd.part_no, 
                                                                                                                 lp.part_name,
+                                                                                                                COALESCE(s.qty, 0) AS stock_in,
                                                                                                                 s.qty,
                                                                                                                 ar.nama_area,
-                                                                                                                ks. jenis_stock
-                                                                                                        FROM stock_in s 
-                                                                                                        left join kategori_stock ks on ks.id = s.kategori
-                                                                                                        left join list_part lp on s.part_no = lp.part_no
-                                                                                                        left join part_prod pd on pd.part_no = s.part_no
-                                                                                                        left join area ar on ar.id = pd.id_area
-                                                                                                        where tgl='$now_date' and kategori='$_GET[kategori]'");
+                                                                                                                ks.jenis_stock
+                                                                                                        FROM part_prod pd
+                                                                                                        LEFT JOIN list_part lp ON lp.part_no = pd.part_no
+                                                                                                        LEFT JOIN stock_in s ON pd.part_no = s.part_no AND s.tgl = '$now_date' AND s.kategori = '$_GET[kategori]'
+                                                                                                        LEFT JOIN kategori_stock ks ON ks.id = s.kategori
+                                                                                                        LEFT JOIN area ar ON ar.id = pd.id_area");
 
 
 
@@ -284,7 +285,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                         $nama_area = $data1['nama_area'];
                                                                         $part_no = $data1['part_no'];
                                                                         $part_name = $data1['part_name'];
-                                                                        $prod = $data1['qty'];
+                                                                        $prod = $data1['stock_in'];
                                                                         $part_asal = $data1['jenis_stock'];
                                                                     ?>
                                                                         <tr>
@@ -293,6 +294,13 @@ date_default_timezone_set('Asia/Jakarta')
                                                                             <td><?php echo $part_no; ?></td>
                                                                             <td><?php echo $part_name; ?></td>
                                                                             <td><?php echo $prod; ?></td>
+                                                                            <td><a href="../deleteMasterData/delete_user.php?id_user=<?php echo $id_employe; ?>" class="alert_notif">
+                                                                                    <button type='button' class='btn btn-icon btn-success btn-circle btn-sm edit'><i class="ti-plus"></i></button>
+                                                                                </a>
+                                                                                <a href="../UpdateMasterData/update_user.php?id=<?php echo $id_employe; ?>">
+                                                                                    <button type='button' class='btn btn-icon btn-danger btn-circle btn-sm edit'><i class="ti-minus"></i></button>
+                                                                                </a>
+                                                                            </td>
                                                                         </tr>
                                                                     <?php
                                                                         $no++;

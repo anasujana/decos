@@ -128,7 +128,7 @@ date_default_timezone_set('Asia/Jakarta')
 
                                                 $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT 
                                                                                                                 q1.plan_total,
-                                                                                                                q2.act
+                                                                                                                COALESCE(q2.act, 0) AS act
                                                                                                             FROM
                                                                                                                 (SELECT 
                                                                                                                     SUM(plan) AS plan_total
@@ -142,7 +142,8 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                                                 FROM 
                                                                                                                     plan
                                                                                                                 WHERE 
-                                                                                                                    tgl_kirim IS NOT NULL AND MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date') q2 ON 1=1;"));
+                                                                                                                    tgl_kirim IS NOT NULL AND MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date') q2 ON 1=1;
+                                                                                                            "));
 
                                                 $mindel = mysqli_query($conn, "SELECT ar.nama_area,
                                                                                         cs.customer,
@@ -153,7 +154,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                         left join customer_deliv cs on cs.id=p.id_customer
                                                                                         left join area ar on ar.id = cs.id_area
                                                                                         join list_part lp on p.part_no = lp.part_no
-                                                                                        WHERE p.tgl_kirim IS NULL AND tgl!='$now_date'
+                                                                                        WHERE p.tgl_kirim IS NULL AND  MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date'
                                                                                         GROUP BY p.part_no, p.id_customer
                                                                                        ORDER BY cs.customer ASC");
                                             } else {
@@ -166,7 +167,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                                                 FROM 
                                                                                                                     plan p
                                                                                                                 WHERE 
-                                                                                                                    tgl_kirim IS NULL OR MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl != '$now_date') q1
+                                                                                                                   (tgl < '$now_date' AND tgl_kirim IS NULL) OR MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl < '$now_date') q1
                                                                                                             JOIN
                                                                                                                 (SELECT 
                                                                                                                     SUM(plan) AS act
@@ -196,7 +197,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                 $achtotal = "0";
                                             } else {
                                                 $achtotal = ($total_act1 / $total_plan1) * 100;
-                                                $achtotal = round($achtotal, 1);
+                                                $achtotal = round($achtotal, 2);
                                             }
                                             ?>
                                             <div class="col-xl-3 col-md-6">
@@ -403,14 +404,14 @@ date_default_timezone_set('Asia/Jakarta')
                                                 </div>
                                             </div>
                                             <!--  plan vs act deliv -->
-                                            <div class="col-xl-12 col-md-12">
+                                            <!-- <div class="col-xl-12 col-md-12">
                                                 <div class="card">
                                                     <div class="card-header">
                                                         <div class="card-header-left">
                                                             <div class="form-group row">
                                                                 <div class="col-sm-12">
                                                                     <h5 class="no_deliv">
-                                                                        Current Stock in FG
+                                                                        Critical stock
                                                                     </h5>
                                                                 </div>
                                                             </div>
@@ -446,8 +447,112 @@ date_default_timezone_set('Asia/Jakarta')
                                                                         <th style="width: 15px;" class="text-center" style="vertical-align: middle;">BALANCE</th>
                                                                     </tr>
                                                                 </thead>
-                                                                <!-- Your table body goes here -->
                                                             </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> -->
+                                            <!--  plan vs act deliv -->
+                                            <div class="col-xl-12 col-md-12">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <div class="card-header-left">
+                                                            <div class="form-group row">
+                                                                <div class="col-sm-12">
+                                                                    <h5 class="no_deliv">
+                                                                        Data Stock
+                                                                    </h5>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-block table-border-style">
+                                                        <!-- Nav tabs -->
+                                                        <ul class="nav nav-tabs  tabs" role="tablist">
+                                                            <li class="nav-item">
+                                                                <a class="nav-link active" data-toggle="tab" href="#critical" role="tab">Critical stock</a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link" data-toggle="tab" href="#stock" role="tab">Stock All</a>
+                                                            </li>
+                                                        </ul>
+                                                        <!-- Tab panes -->
+                                                        <div class="tab-content tabs card-block">
+                                                            <div class="tab-pane active" id="critical" role="tabpanel">
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-bordered text-center" id="stok_data">
+                                                                        <thead>
+                                                                            <tr style="text-align: center;">
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;NO&nbsp;</th>
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">WH&nbsp;&nbsp;</th>
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;CUSTOMER&nbsp;</th>
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;PART NO&nbsp;</th>
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">PART NAME&nbsp;&nbsp;</th>
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;TOTAL STOCK&nbsp;</th>
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;DELIV/DAY&nbsp;</th>
+                                                                                <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK FG&nbsp;&nbsp;</th>
+                                                                                <th style="width: 115px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK WIP</th>
+                                                                                <th style="width: 28px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;PLAN DELIVERY</th>
+                                                                                <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;STD STOCK</th>
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;REMARK</th>
+                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;ACTION&nbsp;</th>
+                                                                            </tr>
+                                                                            <tr style="text-align: center;">
+                                                                                <th style="width: 15.2125px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
+                                                                                <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
+                                                                                <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKIS</th>
+                                                                                <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
+                                                                                <th style="width: 18px;" class="text-center" style="vertical-align: middle;">&nbsp;PLAN</th>
+                                                                                <th style="width: 10px;" class="text-center" style="vertical-align: middle;">&nbsp;BALANCE</th>
+                                                                                <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
+                                                                                <th style="width: 15px;" class="text-center" style="vertical-align: middle;">BALANCE</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <!-- Your table body goes here -->
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                            <div class="tab-pane" id="stock" role="tabpanel">
+                                                                <table class="table table-bordered text-center">
+                                                                    <thead>
+                                                                        <tr style="text-align: center;">
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;NO&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">WH&nbsp;&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;CUSTOMER&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;PART NO&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">PART NAME&nbsp;&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;TOTAL STOCK&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;DELIV/DAY&nbsp;</th>
+                                                                            <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK FG&nbsp;&nbsp;</th>
+                                                                            <th style="width: 115px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK WIP</th>
+                                                                            <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;STD STOCK</th>
+                                                                        </tr>
+                                                                        <tr style="text-align: center;">
+                                                                            <th style="width: 15.2125px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
+                                                                            <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
+                                                                            <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKIS</th>
+                                                                            <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
+                                                                            <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
+                                                                            <th style="width: 15px;" class="text-center" style="vertical-align: middle;">BALANCE</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <td>1</td>
+                                                                        <td>FG 1</td>
+                                                                        <td>ADM KAP</td>
+                                                                        <td>XXX-XXX-XX</td>
+                                                                        <td>AA-AA-AA</td>
+                                                                        <td>100</td>
+                                                                        <td>200</td>
+                                                                        <td>50</td>
+                                                                        <th>60</th>
+                                                                        <td>350</td>
+                                                                        <td>100</td>
+                                                                        <td>100</td>
+                                                                        <td>0</td>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -616,7 +721,7 @@ date_default_timezone_set('Asia/Jakarta')
                                 $achtotal = "0";
                             } else {
                                 $achtotal = ($actual / $plan_tgl) * 100;
-                                $achtotal = round($achtotal, 1);
+                                $achtotal = round($achtotal, 2);
                             }
                             $ach_data[] = $achtotal;
                         }
@@ -627,15 +732,6 @@ date_default_timezone_set('Asia/Jakarta')
                 type: 'line',
                 data: [<?php
                         foreach ($deliv_tgl as $data_tgl) {
-                            $actual = $data_tgl['actual'];
-                            $plan_tgl = $data_tgl['planing'];
-                            if ($plan_tgl == 0) {
-                                $achtotal = "0";
-                            } else {
-                                $achtotal = ($actual / $plan_tgl) * 100;
-                                $achtotal = round($achtotal, 1);
-                            }
-                            $ach_data = $achtotal;
                             echo "100" . ",";
                         }
                         ?>]
@@ -670,7 +766,7 @@ date_default_timezone_set('Asia/Jakarta')
                         if (val % 1 === 0) {
                             return val.toString() + "%"; // Jika bilangan bulat, kembalikan tanpa desimal
                         } else {
-                            return val.toFixed(1) + "%"; // Jika desimal, tampilkan satu angka desimal
+                            return val.toFixed(2) + "%"; // Jika desimal, tampilkan satu angka desimal
                         }
                     }
                     return val;

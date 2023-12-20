@@ -11,14 +11,14 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                             cs.customer,
                                                             pp.part_no,
                                                             lp.part_name,
-                                                            sa.qty AS total_stock,
-                                                            sa.del_day AS deliv_day,
-                                                            MAX(CASE WHEN sar.kategori = 1 THEN COALESCE(sar.current_stock, 0) END) AS stock_fg,
-                                                            MAX(CASE WHEN sar.kategori = 2 THEN COALESCE(sar.current_stock, 0) END) AS wip_rm,
-                                                            MAX(CASE WHEN sar.kategori = 3 THEN COALESCE(sar.current_stock, 0) END) AS wip_produksi,
-                                                            pl.plan,
-                                                            sa.std_stock AS std_stok,
-                                                            sa.remark,
+                                                            COALESCE(sa.qty, 0) AS total_stock,
+                                                            COALESCE(sa.del_day, 0) AS deliv_day,
+                                                            COALESCE(MAX(CASE WHEN sar.kategori = 1 THEN sar.current_stock END), 0) AS stock_fg,
+                                                            COALESCE(MAX(CASE WHEN sar.kategori = 2 THEN sar.current_stock END), 0) AS wip_rm,
+                                                            COALESCE(MAX(CASE WHEN sar.kategori = 3 THEN sar.current_stock END), 0) AS wip_produksi,
+                                                            COALESCE(pl.plan, 0) AS plan,
+                                                            COALESCE(sa.std_stock, 0) AS std_stok,
+                                                            COALESCE(sa.remark, '-') AS remark,
                                                             '' AS action
                                                         FROM 
                                                             list_part lp
@@ -28,7 +28,7 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                             LEFT JOIN part_prod pp ON lp.part_no = pp.part_no
                                                             LEFT JOIN customer_prod cs ON pp.customer_id = cs.id
                                                             LEFT JOIN area ar ON ar.id = pp.id_area
-                                                            LEFT JOIN plan pl ON sar.part_no = pl.part_no AND pl.tgl = '2023-12-15'
+                                                            LEFT JOIN plan pl ON sar.part_no = pl.part_no AND pl.tgl = '$now_date'
                                                         GROUP BY
                                                             sar.part_no,
                                                             ar.nama_area,
