@@ -126,68 +126,67 @@ date_default_timezone_set('Asia/Jakarta')
                                                 $bln_filter = $_POST['bln_filter'];
                                                 $thn_filter = $_POST['thn_filter'];
 
-                                                $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT 
-                                                                                                                q1.plan_total,
+                                                $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  
+                                                                                                                COALESCE( q1.plan_total, 0) AS plan_total,
                                                                                                                 COALESCE(q2.act, 0) AS act
-                                                                                                            FROM
-                                                                                                                (SELECT 
-                                                                                                                    SUM(plan) AS plan_total
-                                                                                                                FROM 
-                                                                                                                    plan p
-                                                                                                                WHERE 
-                                                                                                                    (MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date')) q1
-                                                                                                            JOIN
-                                                                                                                (SELECT 
-                                                                                                                    SUM(plan) AS act
-                                                                                                                FROM 
-                                                                                                                    plan
-                                                                                                                WHERE 
-                                                                                                                    tgl_kirim IS NOT NULL AND MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date') q2 ON 1=1;
-                                                                                                            "));
+                                                                                                           FROM
+                                                                                                               (SELECT 
+                                                                                                                   SUM(plan) AS plan_total
+                                                                                                               FROM 
+                                                                                                                   plan p
+                                                                                                               WHERE 
+                                                                                                                   (MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date')) q1
+                                                                                                           JOIN
+                                                                                                               (SELECT 
+                                                                                                                   SUM(plan) AS act
+                                                                                                               FROM 
+                                                                                                                   plan
+                                                                                                               WHERE 
+                                                                                                                   tgl_kirim IS NOT NULL AND MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date') q2 ON 1=1;"));
 
                                                 $mindel = mysqli_query($conn, "SELECT ar.nama_area,
-                                                                                        cs.customer,
-                                                                                        p.part_no,
-                                                                                        lp.part_name,
-                                                                                        SUM(p.plan) as minus
-                                                                                        from plan p 
-                                                                                        left join customer_deliv cs on cs.id=p.id_customer
-                                                                                        left join area ar on ar.id = cs.id_area
-                                                                                        join list_part lp on p.part_no = lp.part_no
-                                                                                        WHERE p.tgl_kirim IS NULL AND  MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date'
-                                                                                        GROUP BY p.part_no, p.id_customer
-                                                                                       ORDER BY cs.customer ASC");
+                                                                                       cs.customer,
+                                                                                       p.part_no,
+                                                                                       lp.part_name,
+                                                                                       SUM(p.plan) as minus
+                                                                                       from plan p 
+                                                                                       left join customer_deliv cs on cs.id=p.id_customer
+                                                                                       left join area ar on ar.id = cs.id_area
+                                                                                       join list_part lp on p.part_no = lp.part_no
+                                                                                       WHERE p.tgl_kirim IS NULL AND  MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date'
+                                                                                       GROUP BY p.part_no, p.id_customer
+                                                                                      ORDER BY cs.customer ASC");
                                             } else {
                                                 $total_del_acm = mysqli_fetch_assoc(mysqli_query($conn, "SELECT  
-                                                                                                                q1.plan_total,
-                                                                                                                q2.act
-                                                                                                            FROM
-                                                                                                                (SELECT 
-                                                                                                                    SUM(plan) AS plan_total
-                                                                                                                FROM 
-                                                                                                                    plan p
-                                                                                                                WHERE 
-                                                                                                                   (tgl < '$now_date' AND tgl_kirim IS NULL) OR MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl < '$now_date') q1
-                                                                                                            JOIN
-                                                                                                                (SELECT 
-                                                                                                                    SUM(plan) AS act
-                                                                                                                FROM 
-                                                                                                                    plan
-                                                                                                                WHERE 
-                                                                                                                    tgl_kirim IS NOT NULL AND MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl != '$now_date') q2 ON 1=1;"));
+                                                                                                               COALESCE( q1.plan_total, 0) AS plan_total,
+                                                                                                               COALESCE(q2.act, 0) AS act
+                                                                                                           FROM
+                                                                                                               (SELECT 
+                                                                                                                   SUM(plan) AS plan_total
+                                                                                                               FROM 
+                                                                                                                   plan p
+                                                                                                               WHERE 
+                                                                                                                  (tgl < '$now_date' AND tgl_kirim IS NULL) OR MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl < '$now_date') q1
+                                                                                                           JOIN
+                                                                                                               (SELECT 
+                                                                                                                   SUM(plan) AS act
+                                                                                                               FROM 
+                                                                                                                   plan
+                                                                                                               WHERE 
+                                                                                                                   tgl_kirim IS NOT NULL AND MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl != '$now_date') q2 ON 1=1;"));
 
                                                 $mindel = mysqli_query($conn, "SELECT ar.nama_area,
-                                                                                        cs.customer,
-                                                                                        p.part_no,
-                                                                                        lp.part_name,
-                                                                                        SUM(p.plan) as minus
-                                                                                        from plan p 
-                                                                                        left join customer_deliv cs on cs.id=p.id_customer
-                                                                                        left join area ar on ar.id = cs.id_area
-                                                                                        join list_part lp on p.part_no = lp.part_no
-                                                                                        WHERE p.tgl_kirim IS NULL AND tgl!='$now_date' 
-                                                                                        GROUP BY p.part_no, p.id_customer
-                                                                                    ORDER BY cs.customer ASC");
+                                                                                       cs.customer,
+                                                                                       p.part_no,
+                                                                                       lp.part_name,
+                                                                                       SUM(p.plan) as minus
+                                                                                       from plan p 
+                                                                                       left join customer_deliv cs on cs.id=p.id_customer
+                                                                                       left join area ar on ar.id = cs.id_area
+                                                                                       join list_part lp on p.part_no = lp.part_no
+                                                                                       WHERE p.tgl_kirim IS NULL AND tgl!='$now_date' 
+                                                                                       GROUP BY p.part_no, p.id_customer
+                                                                                   ORDER BY cs.customer ASC");
                                             }
                                             $total_plan1 = $total_del_acm['plan_total'];
                                             $total_act1 = $total_del_acm['act'];
@@ -350,7 +349,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!--  plan vs act deliv -->
+                                            <!--  minus delivery -->
                                             <div class="col-xl-12 col-md-12">
                                                 <div class="card">
                                                     <div class="card-header">
@@ -366,7 +365,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                     </div>
                                                     <div class="card-block table-border-style">
                                                         <div class="table-responsive">
-                                                            <table class="table table-bordered datas">
+                                                            <table class="table table-bordered critical">
                                                                 <thead>
                                                                     <th>NO</th>
                                                                     <th>WAREHOUSE</th>
@@ -403,56 +402,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!--  plan vs act deliv -->
-                                            <!-- <div class="col-xl-12 col-md-12">
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <div class="card-header-left">
-                                                            <div class="form-group row">
-                                                                <div class="col-sm-12">
-                                                                    <h5 class="no_deliv">
-                                                                        Critical stock
-                                                                    </h5>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-block table-border-style">
-                                                        <div class="table-responsive">
-                                                            <table class="table table-bordered text-center" id="stok_data">
-                                                                <thead>
-                                                                    <tr style="text-align: center;">
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;NO&nbsp;</th>
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">WH&nbsp;&nbsp;</th>
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;CUSTOMER&nbsp;</th>
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;PART NO&nbsp;</th>
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">PART NAME&nbsp;&nbsp;</th>
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;TOTAL STOCK&nbsp;</th>
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;DELIV/DAY&nbsp;</th>
-                                                                        <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK FG&nbsp;&nbsp;</th>
-                                                                        <th style="width: 115px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK WIP</th>
-                                                                        <th style="width: 28px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;PLAN DELIVERY</th>
-                                                                        <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;STD STOCK</th>
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;REMARK</th>
-                                                                        <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;ACTION&nbsp;</th>
-                                                                    </tr>
-                                                                    <tr style="text-align: center;">
-                                                                        <th style="width: 15.2125px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
-                                                                        <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
-                                                                        <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKIS</th>
-                                                                        <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
-                                                                        <th style="width: 18px;" class="text-center" style="vertical-align: middle;">&nbsp;PLAN</th>
-                                                                        <th style="width: 10px;" class="text-center" style="vertical-align: middle;">&nbsp;BALANCE</th>
-                                                                        <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
-                                                                        <th style="width: 15px;" class="text-center" style="vertical-align: middle;">BALANCE</th>
-                                                                    </tr>
-                                                                </thead>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div> -->
-                                            <!--  plan vs act deliv -->
+                                            <!-- data stock -->
                                             <div class="col-xl-12 col-md-12">
                                                 <div class="card">
                                                     <div class="card-header">
@@ -513,7 +463,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                 </div>
                                                             </div>
                                                             <div class="tab-pane" id="stock" role="tabpanel">
-                                                                <table class="table table-bordered text-center">
+                                                                <table class="table table-bordered text-center datas">
                                                                     <thead>
                                                                         <tr style="text-align: center;">
                                                                             <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;NO&nbsp;</th>
@@ -537,19 +487,88 @@ date_default_timezone_set('Asia/Jakarta')
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
-                                                                        <td>1</td>
-                                                                        <td>FG 1</td>
-                                                                        <td>ADM KAP</td>
-                                                                        <td>XXX-XXX-XX</td>
-                                                                        <td>AA-AA-AA</td>
-                                                                        <td>100</td>
-                                                                        <td>200</td>
-                                                                        <td>50</td>
-                                                                        <th>60</th>
-                                                                        <td>350</td>
-                                                                        <td>100</td>
-                                                                        <td>100</td>
-                                                                        <td>0</td>
+                                                                        <?php
+                                                                        $all_stock_data = mysqli_query($conn, "WITH RankedData AS (
+                                                                            SELECT
+                                                                                DENSE_RANK() OVER (PARTITION BY sar.part_no ORDER BY sa.tgl_updated DESC) AS rnk,
+                                                                                ar.nama_area AS wh,
+                                                                                cs.customer,
+                                                                                pp.part_no,
+                                                                                lp.part_name,
+                                                                                sa.qty AS total_stock,
+                                                                                sa.del_day AS deliv_day,
+                                                                                MAX(CASE WHEN sar.kategori = 1 THEN COALESCE(sar.current_stock, 0) END) AS stock_fg,
+                                                                                MAX(CASE WHEN sar.kategori = 2 THEN COALESCE(sar.current_stock, 0) END) AS wip_rm,
+                                                                                MAX(CASE WHEN sar.kategori = 3 THEN COALESCE(sar.current_stock, 0) END) AS wip_produksi,
+                                                                                sa.std_stock AS std_stok,
+                                                                                '' AS action -- You had an extra pair of single quotes without any value here, not sure if you intended to put something
+                                                                            FROM 
+                                                                                list_part lp
+                                                                                LEFT JOIN stock_all sa ON sa.part_no = lp.part_no 
+                                                                                LEFT JOIN stock_area sar ON sar.part_no = lp.part_no AND sar.kategori IN (1, 2, 3) 
+                                                                                LEFT JOIN kategori_stock ks ON ks.id = sar.kategori
+                                                                                LEFT JOIN part_prod pp ON lp.part_no = pp.part_no
+                                                                                LEFT JOIN customer_prod cs ON pp.customer_id = cs.id
+                                                                                LEFT JOIN area ar ON ar.id = pp.id_area
+                                                                            GROUP BY
+                                                                                sar.part_no,
+                                                                                ar.nama_area,
+                                                                                cs.customer,
+                                                                                pp.part_no,
+                                                                                lp.part_name,
+                                                                                sa.qty,
+                                                                                sa.del_day,
+                                                                                sa.std_stock,
+                                                                                sa.remark,
+                                                                                sa.tgl_updated
+                                                                        )
+                                                                        
+                                                                        SELECT *
+                                                                        FROM RankedData
+                                                                        WHERE rnk = 1 
+                                                                            -- AND total_stock < std_stok
+                                                                        ORDER BY total_stock DESC");
+
+                                                                        $no_min = 1;
+                                                                        foreach ($all_stock_data as $data_stock) {
+                                                                            $wh_name = $data_stock['wh'];
+                                                                            $cust_name = $data_stock['customer'];
+                                                                            $part_no_all = $data_stock['part_no'];
+                                                                            $part_name_all = $data_stock['part_name'];
+                                                                            $total_stock = $data_stock['total_stock'];
+                                                                            $fg_stock = $data_stock['stock_fg'];
+                                                                            $rm_stock = $data_stock['wip_rm'];
+                                                                            $prod_stock = $data_stock['wip_produksi'];
+                                                                            $del_day = $data_stock['deliv_day'];
+                                                                            $std_stock = $data_stock['std_stok'];
+                                                                            $bal_std = $total_stock - $std_stock;
+                                                                            // Menghindari pembagian 0/0
+                                                                            $stock_day = ($del_day != 0) ? $fg_stock / $del_day : 0;
+                                                                            $stock_day = round($stock_day, 1);
+                                                                            // Menangani kasus pembagian 0/0
+                                                                            if ($del_day == 0 && $stock_day != 0) {
+                                                                                $del_day = 0; // Atau berikan nilai atau pesan yang sesuai
+                                                                            }
+                                                                        ?>
+                                                                            <tr>
+                                                                                <td><?php echo $no_min; ?></td>
+                                                                                <td><?php echo $wh_name; ?></td>
+                                                                                <td><?php echo $cust_name; ?></td>
+                                                                                <td><?php echo $part_no_all; ?></td>
+                                                                                <td><?php echo $part_name_all; ?></td>
+                                                                                <td><?php echo $total_stock; ?></td>
+                                                                                <td><?php echo $fg_stock; ?></td>
+                                                                                <td><?php echo $rm_stock; ?></td>
+                                                                                <td><?php echo $prod_stock; ?></td>
+                                                                                <td><?php echo $del_day; ?></td>
+                                                                                <td><?php echo $std_stock; ?></td>
+                                                                                <td><?php echo $stock_day; ?></td>
+                                                                                <td><?php echo $bal_std; ?></td>
+                                                                            </tr>
+                                                                        <?php
+                                                                            $no_min++;
+                                                                        }
+                                                                        ?>
                                                                     </tbody>
                                                                 </table>
                                                             </div>
@@ -646,7 +665,13 @@ date_default_timezone_set('Asia/Jakarta')
     <!-- datatables -->
     <script type="text/javascript">
         $(document).ready(function() {
-            $('.datas').DataTable();
+            new DataTable('.datas', {
+                scrollX: true,
+            });
+        });
+
+        $(document).ready(function() {
+            new DataTable('.critical', {});
         });
     </script>
     <!-- datatables -->
@@ -665,7 +690,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                     SUM(plan) AS planing,
                                                                     SUM(
                                                                         CASE
-                                                                            WHEN p.tgl = p.tgl_kirim THEN
+                                                                            WHEN p.tgl <= p.tgl_kirim THEN
                                                                                 (SELECT SUM(qty) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
                                                                             ELSE 0
                                                                         END
@@ -681,7 +706,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                     SUM(plan) AS planing,
                                                                     SUM(
                                                                         CASE
-                                                                            WHEN p.tgl = p.tgl_kirim THEN
+                                                                            WHEN p.tgl <= p.tgl_kirim THEN
                                                                                 (SELECT SUM(qty) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
                                                                             ELSE 0
                                                                         END
@@ -989,6 +1014,10 @@ date_default_timezone_set('Asia/Jakarta')
     <script>
         var table = $('#stok_data').DataTable({
             "ajax": 'stock_data.php?',
+        })
+
+        var table = $('#stok_all').DataTable({
+            "ajax": 'stock_data_all.php?',
         })
 
         $('#stok_data').on('click', '.edit', function() {
