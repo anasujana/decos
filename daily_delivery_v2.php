@@ -135,14 +135,14 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                                                FROM 
                                                                                                                    plan p
                                                                                                                WHERE 
-                                                                                                                   (MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter')) q1
+                                                                                                                   (MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date')) q1
                                                                                                            JOIN
                                                                                                                (SELECT 
                                                                                                                    SUM(plan) AS act
                                                                                                                FROM 
                                                                                                                    plan
                                                                                                                WHERE 
-                                                                                                                   tgl_kirim IS NOT NULL AND MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter') q2 ON 1=1;"));
+                                                                                                                   tgl_kirim IS NOT NULL AND MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date') q2 ON 1=1;"));
 
                                                 $mindel = mysqli_query($conn, "SELECT ar.nama_area,
                                                                                        cs.customer,
@@ -153,7 +153,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                        left join customer_deliv cs on cs.id=p.id_customer
                                                                                        left join area ar on ar.id = cs.id_area
                                                                                        join list_part lp on p.part_no = lp.part_no
-                                                                                       WHERE p.tgl_kirim IS NULL AND  MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter'
+                                                                                       WHERE p.tgl_kirim IS NULL AND  MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter' AND tgl != '$now_date'
                                                                                        GROUP BY p.part_no, p.id_customer
                                                                                       ORDER BY cs.customer ASC");
                                             } else {
@@ -173,7 +173,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                                                FROM 
                                                                                                                    plan
                                                                                                                WHERE 
-                                                                                                                   tgl_kirim IS NOT NULL AND MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl < '$now_date') q2 ON 1=1;"));
+                                                                                                                   tgl_kirim IS NOT NULL AND MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl != '$now_date') q2 ON 1=1;"));
 
                                                 $mindel = mysqli_query($conn, "SELECT ar.nama_area,
                                                                                        cs.customer,
@@ -184,7 +184,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                        left join customer_deliv cs on cs.id=p.id_customer
                                                                                        left join area ar on ar.id = cs.id_area
                                                                                        join list_part lp on p.part_no = lp.part_no
-                                                                                       WHERE p.tgl_kirim IS NULL AND tgl < '$now_date' 
+                                                                                       WHERE p.tgl_kirim IS NULL AND tgl!='$now_date' 
                                                                                        GROUP BY p.part_no, p.id_customer
                                                                                    ORDER BY cs.customer ASC");
                                             }
@@ -199,7 +199,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                 $achtotal = round($achtotal, 2);
                                             }
                                             ?>
-                                            <div class="col-xl-3 col-md-6" style="height: 10px;">
+                                            <div class="col-xl-3 col-md-6">
                                                 <div class="card">
                                                     <div class="card-block">
                                                         <div class="row align-items-center">
@@ -324,7 +324,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                         $mulai = date('Y') - 5;
                                                                         $filterTahun = isset($_POST['thn_filter']) ? $_POST['thn_filter'] : ''; // Ganti $_POST dengan sumber data yang sesuai
 
-                                                                        for ($i = $mulai; $i < $mulai + 5; $i++) {
+                                                                        for ($i = $mulai; $i < $mulai + 3; $i++) {
                                                                             $sel = $i == $filterTahun ? ' selected="selected"' : '';
                                                                             echo '<option value="' . $i . '"' . $sel . '>' . $i . '</option>';
                                                                         }
@@ -365,7 +365,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                     </div>
                                                     <div class="card-block table-border-style">
                                                         <div class="table-responsive">
-                                                            <table class="table table-bordered datas">
+                                                            <table class="table table-bordered critical">
                                                                 <thead>
                                                                     <th>NO</th>
                                                                     <th>WAREHOUSE</th>
@@ -450,8 +450,8 @@ date_default_timezone_set('Asia/Jakarta')
                                                                             <tr style="text-align: center;">
                                                                                 <th style="width: 15.2125px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
                                                                                 <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
+                                                                                <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKIS</th>
                                                                                 <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
-                                                                                <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKSI</th>
                                                                                 <th style="width: 18px;" class="text-center" style="vertical-align: middle;">&nbsp;PLAN</th>
                                                                                 <th style="width: 10px;" class="text-center" style="vertical-align: middle;">&nbsp;BALANCE</th>
                                                                                 <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
@@ -463,123 +463,114 @@ date_default_timezone_set('Asia/Jakarta')
                                                                 </div>
                                                             </div>
                                                             <div class="tab-pane" id="stock" role="tabpanel">
-                                                                <div class="table-responsive">
-                                                                    <table class="table table-bordered text-center critical autofit" id="stock_all">
-                                                                        <thead>
-                                                                            <tr style="text-align: center;">
-                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;NO&nbsp;</th>
-                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">WH&nbsp;&nbsp;</th>
-                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;CUSTOMER&nbsp;</th>
-                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;PART NO&nbsp;</th>
-                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">PART NAME&nbsp;&nbsp;</th>
-                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;TOTAL STOCK&nbsp;</th>
-                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;DELIV/DAY&nbsp;</th>
-                                                                                <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK FG&nbsp;&nbsp;</th>
-                                                                                <th style="width: 115px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK WIP</th>
-                                                                                <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;STD STOCK</th>
-                                                                                <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;ACTION&nbsp;</th>
-                                                                            </tr>
-                                                                            <tr style="text-align: center;">
-                                                                                <th style="width: 15.2125px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
-                                                                                <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
-                                                                                <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
-                                                                                <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKSI</th>
-                                                                                <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
-                                                                                <th style="width: 15px;" class="text-center" style="vertical-align: middle;">BALANCE</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <?php
-                                                                            $all_stock_data = mysqli_query($conn, "WITH RankedData AS (
-                                                                                SELECT
-                                                                                    DENSE_RANK() OVER (PARTITION BY sar.part_no ORDER BY sa.tgl_updated DESC) AS rnk,
-                                                                                    ar.nama_area AS wh,
-                                                                                    cs.customer,
-                                                                                    pp.part_no,
-                                                                                    lp.part_name,
-                                                                                    sa.id,
-                                                                                    sa.qty AS total_stock,
-                                                                                    sa.del_day AS deliv_day,
-                                                                                    MAX(CASE WHEN sar.kategori = 1 THEN COALESCE(sar.current_stock, 0) END) AS stock_fg,
-                                                                                    MAX(CASE WHEN sar.kategori = 2 THEN COALESCE(sar.current_stock, 0) END) AS wip_rm,
-                                                                                    MAX(CASE WHEN sar.kategori = 3 THEN COALESCE(sar.current_stock, 0) END) AS wip_produksi,
-                                                                                    sa.std_stock AS std_stok,
-                                                                                    '' AS action -- You had an extra pair of single quotes without any value here, not sure if you intended to put something
-                                                                                FROM 
-                                                                                    list_part lp
-                                                                                    LEFT JOIN stock_all sa ON sa.part_no = lp.part_no 
-                                                                                    LEFT JOIN stock_area sar ON sar.part_no = lp.part_no AND sar.kategori IN (1, 2, 3) 
-                                                                                    LEFT JOIN kategori_stock ks ON ks.id = sar.kategori
-                                                                                    LEFT JOIN part_prod pp ON lp.part_no = pp.part_no
-                                                                                    LEFT JOIN customer_prod cs ON pp.customer_id = cs.id
-                                                                                    LEFT JOIN area ar ON ar.id = pp.id_area
-                                                                                GROUP BY
-                                                                                    sar.part_no,
-                                                                                    ar.nama_area,
-                                                                                    cs.customer,
-                                                                                    pp.part_no,
-                                                                                    lp.part_name,
-                                                                                    sa.id,
-                                                                                    sa.qty,
-                                                                                    sa.del_day,
-                                                                                    sa.std_stock,
-                                                                                    sa.remark,
-                                                                                    sa.tgl_updated
-                                                                            )
-                                                                            
-                                                                            SELECT *
-                                                                            FROM RankedData
-                                                                            WHERE rnk = 1
-                                                                            ORDER BY total_stock DESC");
+                                                                <table class="table table-bordered text-center datas">
+                                                                    <thead>
+                                                                        <tr style="text-align: center;">
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;NO&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">WH&nbsp;&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;CUSTOMER&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;PART NO&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">PART NAME&nbsp;&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;TOTAL STOCK&nbsp;</th>
+                                                                            <th style="width: 15px; vertical-align: middle;" rowspan="2" class="text-center">&nbsp;DELIV/DAY&nbsp;</th>
+                                                                            <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK FG&nbsp;&nbsp;</th>
+                                                                            <th style="width: 115px;" colspan="2" class="text-center" style="vertical-align: middle;">STOCK WIP</th>
+                                                                            <th style="width: 30px;" colspan="2" class="text-center" style="vertical-align: middle;">&nbsp;STD STOCK</th>
+                                                                        </tr>
+                                                                        <tr style="text-align: center;">
+                                                                            <th style="width: 15.2125px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
+                                                                            <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
+                                                                            <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKIS</th>
+                                                                            <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
+                                                                            <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
+                                                                            <th style="width: 15px;" class="text-center" style="vertical-align: middle;">BALANCE</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <?php
+                                                                        $all_stock_data = mysqli_query($conn, "WITH RankedData AS (
+                                                                            SELECT
+                                                                                DENSE_RANK() OVER (PARTITION BY sar.part_no ORDER BY sa.tgl_updated DESC) AS rnk,
+                                                                                ar.nama_area AS wh,
+                                                                                cs.customer,
+                                                                                pp.part_no,
+                                                                                lp.part_name,
+                                                                                sa.qty AS total_stock,
+                                                                                sa.del_day AS deliv_day,
+                                                                                MAX(CASE WHEN sar.kategori = 1 THEN COALESCE(sar.current_stock, 0) END) AS stock_fg,
+                                                                                MAX(CASE WHEN sar.kategori = 2 THEN COALESCE(sar.current_stock, 0) END) AS wip_rm,
+                                                                                MAX(CASE WHEN sar.kategori = 3 THEN COALESCE(sar.current_stock, 0) END) AS wip_produksi,
+                                                                                sa.std_stock AS std_stok,
+                                                                                '' AS action -- You had an extra pair of single quotes without any value here, not sure if you intended to put something
+                                                                            FROM 
+                                                                                list_part lp
+                                                                                LEFT JOIN stock_all sa ON sa.part_no = lp.part_no 
+                                                                                LEFT JOIN stock_area sar ON sar.part_no = lp.part_no AND sar.kategori IN (1, 2, 3) 
+                                                                                LEFT JOIN kategori_stock ks ON ks.id = sar.kategori
+                                                                                LEFT JOIN part_prod pp ON lp.part_no = pp.part_no
+                                                                                LEFT JOIN customer_prod cs ON pp.customer_id = cs.id
+                                                                                LEFT JOIN area ar ON ar.id = pp.id_area
+                                                                            GROUP BY
+                                                                                sar.part_no,
+                                                                                ar.nama_area,
+                                                                                cs.customer,
+                                                                                pp.part_no,
+                                                                                lp.part_name,
+                                                                                sa.qty,
+                                                                                sa.del_day,
+                                                                                sa.std_stock,
+                                                                                sa.remark,
+                                                                                sa.tgl_updated
+                                                                        )
+                                                                        
+                                                                        SELECT *
+                                                                        FROM RankedData
+                                                                        WHERE rnk = 1 
+                                                                            -- AND total_stock < std_stok
+                                                                        ORDER BY total_stock DESC");
 
-                                                                            $no_min = 1;
-                                                                            foreach ($all_stock_data as $data_stock) {
-                                                                                $wh_name = $data_stock['wh'];
-                                                                                $id_stock = $data_stock['id'];
-                                                                                $cust_name = $data_stock['customer'];
-                                                                                $part_no_all = $data_stock['part_no'];
-                                                                                $part_name_all = $data_stock['part_name'];
-                                                                                $total_stock = $data_stock['total_stock'];
-                                                                                $fg_stock = $data_stock['stock_fg'];
-                                                                                $rm_stock = $data_stock['wip_rm'];
-                                                                                $prod_stock = $data_stock['wip_produksi'];
-                                                                                $del_day = $data_stock['deliv_day'];
-                                                                                $std_stock = $data_stock['std_stok'];
-                                                                                $bal_std = $total_stock - $std_stock;
-                                                                                // Menghindari pembagian 0/0
-                                                                                $stock_day = ($del_day != 0) ? $fg_stock / $del_day : 0;
-                                                                                $stock_day = round($stock_day, 1);
-                                                                                // Menangani kasus pembagian 0/0
-                                                                                if ($del_day == 0 && $stock_day != 0) {
-                                                                                    $del_day = 0; // Atau berikan nilai atau pesan yang sesuai
-                                                                                }
-                                                                            ?>
-                                                                                <tr>
-                                                                                    <td><?php echo $no_min; ?></td>
-                                                                                    <td><?php echo $wh_name; ?></td>
-                                                                                    <td><?php echo $cust_name; ?></td>
-                                                                                    <td><?php echo $part_no_all; ?></td>
-                                                                                    <td><?php echo $part_name_all; ?></td>
-                                                                                    <td><?php echo $total_stock; ?></td>
-                                                                                    <td><?php echo $del_day; ?></td>
-                                                                                    <td><?php echo $fg_stock; ?></td>
-                                                                                    <td><?php echo $stock_day; ?></td>
-                                                                                    <td><?php echo $rm_stock; ?></td>
-                                                                                    <td><?php echo $prod_stock; ?></td>
-                                                                                    <td><?php echo $std_stock; ?></td>
-                                                                                    <td><?php echo $bal_std; ?></td>
-                                                                                    <td><button type='button' class='btn btn-icon btn-success btn-circle btn-sm edit_stock' data-toggle='modal' data-idstockall="<?= $id_stock ?> " data-idnoall="<?= $part_no_all ?>" data-namaall="<?= $part_name_all ?>" data-qtydelivall="<?= $del_day ?>" data-qtystdall="<?= $std_stock ?>" data-target='#editStock'>
-                                                                                            EDIT
-                                                                                        </button>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            <?php
-                                                                                $no_min++;
+                                                                        $no_min = 1;
+                                                                        foreach ($all_stock_data as $data_stock) {
+                                                                            $wh_name = $data_stock['wh'];
+                                                                            $cust_name = $data_stock['customer'];
+                                                                            $part_no_all = $data_stock['part_no'];
+                                                                            $part_name_all = $data_stock['part_name'];
+                                                                            $total_stock = $data_stock['total_stock'];
+                                                                            $fg_stock = $data_stock['stock_fg'];
+                                                                            $rm_stock = $data_stock['wip_rm'];
+                                                                            $prod_stock = $data_stock['wip_produksi'];
+                                                                            $del_day = $data_stock['deliv_day'];
+                                                                            $std_stock = $data_stock['std_stok'];
+                                                                            $bal_std = $total_stock - $std_stock;
+                                                                            // Menghindari pembagian 0/0
+                                                                            $stock_day = ($del_day != 0) ? $fg_stock / $del_day : 0;
+                                                                            $stock_day = round($stock_day, 1);
+                                                                            // Menangani kasus pembagian 0/0
+                                                                            if ($del_day == 0 && $stock_day != 0) {
+                                                                                $del_day = 0; // Atau berikan nilai atau pesan yang sesuai
                                                                             }
-                                                                            ?>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
+                                                                        ?>
+                                                                            <tr>
+                                                                                <td><?php echo $no_min; ?></td>
+                                                                                <td><?php echo $wh_name; ?></td>
+                                                                                <td><?php echo $cust_name; ?></td>
+                                                                                <td><?php echo $part_no_all; ?></td>
+                                                                                <td><?php echo $part_name_all; ?></td>
+                                                                                <td><?php echo $total_stock; ?></td>
+                                                                                <td><?php echo $fg_stock; ?></td>
+                                                                                <td><?php echo $rm_stock; ?></td>
+                                                                                <td><?php echo $prod_stock; ?></td>
+                                                                                <td><?php echo $del_day; ?></td>
+                                                                                <td><?php echo $std_stock; ?></td>
+                                                                                <td><?php echo $stock_day; ?></td>
+                                                                                <td><?php echo $bal_std; ?></td>
+                                                                            </tr>
+                                                                        <?php
+                                                                            $no_min++;
+                                                                        }
+                                                                        ?>
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -598,12 +589,12 @@ date_default_timezone_set('Asia/Jakarta')
         </div>
     </div>
 
-    <!-- Modal remark-->
+    <!-- Modal edit stock-->
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Input Problem</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Stock</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -612,62 +603,20 @@ date_default_timezone_set('Asia/Jakarta')
                     <form action="update_stock.php" method="post">
                         <div class="form-row">
                             <div class="form-group col-md-12">
-                                <input type="hidden" name="stock_id" id="stock_id" class="form-control">
+                                <label for="Nama">Part No</label>
+                                <input type="text" name="part_no_edit" id="part_no_data" class="form-control form-control-round" readonly>
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="Nama">Part No :</label>
-                                <input type="text" id="part_no_data" class="form-control" readonly>
+                                <label for="Nama">Part Name</label>
+                                <input type="text" name="part_name_edit" id="part_name_data" class="form-control form-control-round" readonly>
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="Nama">Part Name </label>
-                                <input type="text" id="part_name_data" class="form-control" readonly>
+                                <label for="Nama">Standar Stock</label>
+                                <input type="text" name="std_edit" id="std_data" class="form-control form-control-round">
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="remark">Remark :</label>
-                                <br>
-                                <textarea name="remark" id="remark" cols="50" rows="5" autofocus></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-round" data-dismiss="modal">Close</button>
-                            <input type="submit" name="save" class="btn btn-primary btn-round" value="Save">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal end-->
-
-    <!-- Modal setting stock-->
-    <div class="modal fade" id="editStock" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Setting Stock</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="update_stock_all.php" method="post">
-                        <div class="form-row">
-                            <input type="hidden" id="id_stock_all" name="id_stock_all">
-                            <div class="form-group col-md-12">
-                                <label for="Nama">Part No :</label>
-                                <input type="text" id="part_no_all" class="form-control" readonly>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="Nama">Part Name </label>
-                                <input type="text" id="part_name_all" class="form-control" readonly>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="Nama">Del/day :</label>
-                                <input type="text" name="del_day_all" id="del_day_all" class="form-control">
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="Nama">Std stock : </label>
-                                <input type="text" name="std_stock_all" id="std_stock_all" class="form-control">
+                                <label for="Nama">Delivery/Day</label>
+                                <input type="text" name="deliv_edit" id="deliv_data" class="form-control form-control-round">
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -712,11 +661,13 @@ date_default_timezone_set('Asia/Jakarta')
     <!-- datatables -->
     <script type="text/javascript">
         $(document).ready(function() {
-            new DataTable('.critical', {
-                // scrollX: true,
-                // scrollY: 400
+            new DataTable('.datas', {
+                scrollX: true,
             });
-            $('.datas').DataTable();
+        });
+
+        $(document).ready(function() {
+            new DataTable('.critical', {});
         });
     </script>
     <!-- datatables -->
@@ -726,105 +677,49 @@ date_default_timezone_set('Asia/Jakarta')
             series: [{
                 name: 'plan',
                 type: 'column',
-                data: [
-                    <?php
-                    // Mendapatkan tanggal pertama dari bulan berjalan
-                    $tanggal_pertama = date('Y-m-01');
-                    // Mendapatkan tanggal terakhir dari bulan berjalan
-                    $tanggal_terakhir = date('Y-m-t');
-                    if (isset($_POST['bln_filter']) and isset($_POST['thn_filter'])) {
-                        $bln_filter = $_POST['bln_filter'];
-                        $thn_filter = $_POST['thn_filter'];
+                data: [<?php
+                        if (isset($_POST['bln_filter']) and isset($_POST['thn_filter'])) {
+                            $bln_filter = $_POST['bln_filter'];
+                            $thn_filter = $_POST['thn_filter'];
 
-                        // Mendapatkan tanggal pertama
-                        $tanggal_pertama = mktime(0, 0, 0, $bln_filter, 1, $thn_filter);
-
-                        // Mendapatkan tanggal terakhir
-                        $tanggal_terakhir = mktime(23, 59, 59, $bln_filter + 1, 0, $thn_filter);
-
-                        // Format tanggal sesuai kebutuhan (misalnya, format Y-m-d)
-                        $tanggal_pertama_formatted = date('Y-m-d', $tanggal_pertama);
-                        $tanggal_terakhir_formatted = date('Y-m-d', $tanggal_terakhir);
-
-                        $deliv_tgl = mysqli_query($conn, "WITH DateRange AS (
-                                                                            SELECT 
-                                                                                DATE_FORMAT(DATE_ADD('$tanggal_pertama_formatted', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY), '%Y-%m-%d') AS date
-                                                                            FROM 
-                                                                                (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
-                                                                                CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
-                                                                                CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
-                                                                            WHERE 
-                                                                                DATE_ADD('$tanggal_pertama_formatted', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY) BETWEEN '$tanggal_pertama_formatted' AND '$tanggal_terakhir_formatted'
-                                                                                AND DAYOFWEEK(DATE_ADD(''$tanggal_pertama_formatted', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY)) NOT IN (1, 7) -- Exclude Sunday (1) and Saturday (7)
-                                                                        )
-                                                                        SELECT 
-                                                                            dr.date AS tgl,
-                                                                            COALESCE(SUM(p.plan), 0) AS planing,
-                                                                            COALESCE(SUM(
-                                                                                CASE
-                                                                                    WHEN p.tgl <= p.tgl_kirim THEN
-                                                                                        (SELECT COALESCE(SUM(pr.qty), 0) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
-                                                                                    ELSE 0
-                                                                                END
-                                                                            ), 0) AS actual
-                                                                        FROM 
-                                                                            DateRange dr
-                                                                        LEFT JOIN 
-                                                                            plan p ON dr.date = p.tgl
-                                                                        LEFT JOIN 
-                                                                            customer_deliv cd ON cd.id = p.id_customer
-                                                                        LEFT JOIN 
-                                                                            surat_jalan sj ON sj.no_delivery = p.no_delivery
-                                                                        WHERE 
-                                                                            MONTH(dr.date) = '$bln_filter' AND YEAR(dr.date) = '$thn_filter'
-                                                                        GROUP BY 
-                                                                            dr.date
-                                                                        ORDER BY 
-                                                                            dr.date ASC");
-                    } else {
-                        $deliv_tgl = mysqli_query($conn, "WITH DateRange AS (
-                                                                                SELECT 
-                                                                                    DATE_FORMAT(DATE_ADD('2024-01-01', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY), '%Y-%m-%d') AS date
-                                                                                FROM 
-                                                                                    (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
-                                                                                    CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
-                                                                                    CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
-                                                                                WHERE 
-                                                                                    DATE_ADD('$tanggal_pertama', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY) BETWEEN '$tanggal_pertama' AND '$tanggal_terakhir'
-                                                                                    AND DAYOFWEEK(DATE_ADD('$tanggal_pertama', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY)) NOT IN (1, 7) -- Exclude Sunday (1) and Saturday (7)
-                                                                            )
-                                                                            SELECT 
-                                                                                dr.date AS tgl,
-                                                                                COALESCE(SUM(p.plan), 0) AS planing,
-                                                                                COALESCE(SUM(
-                                                                                    CASE
-                                                                                        WHEN p.tgl <= p.tgl_kirim THEN
-                                                                                            (SELECT COALESCE(SUM(pr.qty), 0) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
-                                                                                        ELSE 0
-                                                                                    END
-                                                                                ), 0) AS actual
-                                                                            FROM 
-                                                                                DateRange dr
-                                                                            LEFT JOIN 
-                                                                                plan p ON dr.date = p.tgl
-                                                                            LEFT JOIN 
-                                                                                customer_deliv cd ON cd.id = p.id_customer
-                                                                            LEFT JOIN 
-                                                                                surat_jalan sj ON sj.no_delivery = p.no_delivery
-                                                                            WHERE 
-                                                                                MONTH(dr.date) = '$now_month' AND YEAR(dr.date) = '$now_year'
-                                                                            GROUP BY 
-                                                                                dr.date
-                                                                            ORDER BY 
-                                                                                dr.date ASC");
-                    }
-                    $planing_data = [];
-                    foreach ($deliv_tgl as $data_tgl) {
-                        $planing_data[] = $data_tgl['planing'];
-                    }
-                    echo implode(",", $planing_data);
-                    ?>
-                ]
+                            $deliv_tgl = mysqli_query($conn, "SELECT p.tgl,
+                                                                    SUM(plan) AS planing,
+                                                                    SUM(
+                                                                        CASE
+                                                                            WHEN p.tgl <= p.tgl_kirim THEN
+                                                                                (SELECT SUM(qty) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
+                                                                            ELSE 0
+                                                                        END
+                                                                    ) AS actual
+                                                                FROM plan p
+                                                                LEFT JOIN customer_deliv cd ON cd.id = p.id_customer
+                                                                LEFT JOIN surat_jalan sj ON sj.no_delivery = p.no_delivery
+                                                                WHERE MONTH(tgl) = '$bln_filter' AND YEAR(tgl) = '$thn_filter'
+                                                                GROUP BY p.tgl
+                                                                ORDER BY p.tgl ASC");
+                        } else {
+                            $deliv_tgl = mysqli_query($conn, "SELECT p.tgl,
+                                                                    SUM(plan) AS planing,
+                                                                    SUM(
+                                                                        CASE
+                                                                            WHEN p.tgl <= p.tgl_kirim THEN
+                                                                                (SELECT SUM(qty) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
+                                                                            ELSE 0
+                                                                        END
+                                                                    ) AS actual
+                                                                FROM plan p
+                                                                LEFT JOIN customer_deliv cd ON cd.id = p.id_customer
+                                                                LEFT JOIN surat_jalan sj ON sj.no_delivery = p.no_delivery
+                                                                WHERE MONTH(tgl) = '$now_month' AND YEAR(tgl) = '$now_year' AND tgl!='$now_date'
+                                                                GROUP BY p.tgl
+                                                                ORDER BY p.tgl ASC");
+                        }
+                        $planing_data = [];
+                        foreach ($deliv_tgl as $data_tgl) {
+                            $planing_data[] = $data_tgl['planing'];
+                        }
+                        echo implode(",", $planing_data);
+                        ?>]
             }, {
                 name: 'actual',
                 type: 'column',
@@ -844,7 +739,7 @@ date_default_timezone_set('Asia/Jakarta')
                             $actual = $data_tgl['actual'];
                             $plan_tgl = $data_tgl['planing'];
                             if ($plan_tgl == 0) {
-                                $achtotal = 0;
+                                $achtotal = "0";
                             } else {
                                 $achtotal = ($actual / $plan_tgl) * 100;
                                 $achtotal = round($achtotal, 2);
@@ -854,7 +749,7 @@ date_default_timezone_set('Asia/Jakarta')
                         echo implode(",", $ach_data);
                         ?>]
             }, {
-                name: 'target (100%)',
+                name: 'target',
                 type: 'line',
                 data: [<?php
                         foreach ($deliv_tgl as $data_tgl) {
@@ -931,16 +826,12 @@ date_default_timezone_set('Asia/Jakarta')
                 offsetX: 0
             },
             xaxis: {
-                categories: [
-                    <?php
-                    foreach ($deliv_tgl as $data_tgl) {
-                        $tgl_deliv = $data_tgl['tgl'];
-                        $tanggal_format_baru = date("Y-m-d", strtotime($tgl_deliv));
-                        $tgl_deliv = explode("-", $tanggal_format_baru)[2];
-                        echo "'" . $tgl_deliv . "'" . ",";
-                    }
-                    ?>
-                ],
+                categories: [<?php
+                                foreach ($deliv_tgl as $data_tgl) {
+                                    $tgl_deliv = $data_tgl['tgl'];
+                                    echo "'" . $tgl_deliv . "'" . ",";
+                                }
+                                ?>],
             },
             yaxis: [{
                     axisTicks: {
@@ -1121,34 +1012,41 @@ date_default_timezone_set('Asia/Jakarta')
             "ajax": 'stock_data.php?',
         })
 
+        var table = $('#stok_all').DataTable({
+            "ajax": 'stock_data_all.php?',
+        })
+
         $('#stok_data').on('click', '.edit', function() {
             var id = this;
             var id1 = $(this).data('id');
+
             $('#part_no_data').val(id1);
-
-            var id2 = $(this).data('nama');
-            $('#part_name_data').val(id2);
-
-            var id3 = $(this).data('idstock');
-            $('#stock_id').val(id3);
         })
 
-        $('#stock_all').on('click', '.edit_stock', function() {
+        $('#stok_data').on('click', '.edit', function() {
             var id = this;
-            var id1 = $(this).data('idstockall');
-            $('#id_stock_all').val(id1);
+            var id2 = $(this).data('nama');
+            $('#part_name_data').val(id2);
+        })
 
-            var id2 = $(this).data('idnoall');
-            $('#part_no_all').val(id2);
+        $('#stok_data').on('click', '.edit', function() {
+            var id = this;
+            var id1 = $(this).data('qtystock');
 
-            var id3 = $(this).data('namaall');
-            $('#part_name_all').val(id3);
+            $('#stock_data').val(id1);
+        })
 
-            var id4 = $(this).data('qtydelivall');
-            $('#del_day_all').val(id4);
+        $('#stok_data').on('click', '.edit', function() {
+            var id = this;
+            var id2 = $(this).data('qtydeliv');
+            $('#deliv_data').val(id2);
+        })
 
-            var id5 = $(this).data('qtystdall');
-            $('#std_stock_all').val(id5);
+        $('#stok_data').on('click', '.edit', function() {
+            var id = this;
+            var id1 = $(this).data('qtystd');
+
+            $('#std_data').val(id1);
         })
     </script>
 

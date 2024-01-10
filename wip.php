@@ -79,81 +79,15 @@ date_default_timezone_set('Asia/Jakarta')
                         $cek_stock_mt = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no FROM list_part where part_no='$qr_part_no[0]'"));
                         $part_no_mt = $cek_stock_mt['part_no'];
 
-                        // Cek part  NO & qty stock in
-                        $cek_stock_in = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, qty, tgl FROM stock_in where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl DESC LIMIT 1"));
-
-                        // Gunakan operator null coalescing untuk memberikan nilai default jika $cek_stock_in null
-                        $stock_in = $cek_stock_in['qty'] ?? 0;
-                        $tgl_akhir_in = $cek_stock_in['tgl'] ?? null;
-
+                        // Cek part  NO & qty stock 
+                        $cek_last_stock = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, tgl, stock_awal, stock_in, stock_out, current_stock FROM stock where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl DESC LIMIT 1"));
+                        $tgl_akhir = $cek_last_stock['tgl'] ?? null;
+                        $last_stock = $cek_last_stock['current_stock'] ?? 0;
+                        $stock_in = $cek_last_stock['stock_in'] ?? 0;
                         $tambah_stock_in = $stock_in + $qr_part_no[1];
-
-                        if ($part_no_mt == $qr_part_no[0]) {
-                            if ($now_date != $tgl_akhir_in and $_GET['kategori'] != 1) {
-                                // tambahkan ke stok area
-                                $add_stock_in = mysqli_query($conn, "INSERT INTO stock_in VALUES (NULL,'$qr_part_no[0]','$now_date','$qr_part_no[1]','$_GET[kategori]')");
-                            } else if ($now_date == $tgl_akhir_in) {
-                                // update stock_area pada tgl terakhir
-                                $add_stock_in = mysqli_query($conn, "UPDATE stock_in SET qty='$tambah_stock_in' WHERE part_no='$qr_part_no[0]' and tgl='$tgl_akhir_in' and kategori='$_GET[kategori]'");
-                            }
-                            echo '<script>
-                                 swal.fire({
-                                     title: "Success",
-                                     text: "Scan QR label Complete",
-                                     icon: "success",
-                                     timer: 1500
-                                 }).then(function(){
-                                     document.getElementById("part_scan").focus();
-                                     });
-                             </script>';
-                        } else {
-                            echo '<script>
-                                 swal.fire({
-                                     title: "Error!",
-                                     text: "Part Number Customer Tidak Cocok",
-                                     icon:"error",
-                                 }).then(function(){
-                                     document.getElementById("part_scan").focus();
-                                     });
-                             </script>';
-                        };
-
-                        // Cek part  NO & qty stock area
-                        $part_no_all = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, current_stock, tgl_updated FROM stock_area where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl_updated DESC LIMIT 1"));
-                        $stock_area = $part_no_all['current_stock'] ?? 0;
-                        $last_updated_area = $part_no_all['tgl_updated']  ?? null;
-                        $tambah_stock_area = $stock_area + $qr_part_no[1];
-                        $kurangi_stock_area = $stock_area - $qr_part_no[1];
-
-                        if ($part_no_mt == $qr_part_no[0]) {
-                            if ($now_date != $last_updated_area and $_GET['kategori'] != 1) {
-                                // update stock_area pada tgl terakhir
-                                $add_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$tambah_stock_area','$_GET[kategori]','$now_date')");
-                            } else if ($now_date == $last_updated_area and $_GET['kategori'] != 1) {
-                                // update stock_area pada tgl terakhir
-                                $update_stock_area = mysqli_query($conn, "UPDATE stock_area SET current_stock='$tambah_stock_area' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_updated_area' and kategori='$_GET[kategori]'");
-                            };
-                            echo '<script>
-                                 swal.fire({
-                                     title: "Success",
-                                     text: "Scan QR label Complete",
-                                     icon: "success",
-                                     timer: 1500
-                                 }).then(function(){
-                                     document.getElementById("part_scan").focus();
-                                     });
-                             </script>';
-                        } else {
-                            echo '<script>
-                                 swal.fire({
-                                     title: "Error!",
-                                     text: "Part Number Customer Tidak Cocok",
-                                     icon:"error",
-                                 }).then(function(){
-                                     document.getElementById("part_scan").focus();
-                                     });
-                             </script>';
-                        };
+                        $current_stock_in = $last_stock + $qr_part_no[1];
+                        $stock_out = $cek_last_stock['stock_out'] ?? 0;
+                        $tambah_stock_out = $stock_out + $qr_part_no[1];
 
                         // Cek part no & qty stock all
                         $data_stock_all = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, tgl_updated, del_day, std_stock, qty FROM stock_all where part_no='$qr_part_no[0]' ORDER BY tgl_updated DESC LIMIT 1"));
@@ -171,29 +105,36 @@ date_default_timezone_set('Asia/Jakarta')
                                 // update stock_area pada tgl terakhir
                                 $add_stok_all = mysqli_query($conn, "UPDATE stock_all SET qty='$tambah_stock_all' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_stock_all'");
                             }
+
+                            if ($now_date != $tgl_akhir) {
+                                // tambahkan ke stok area
+                                $add_stock_in = mysqli_query($conn, "INSERT INTO stock VALUES (NULL,'$qr_part_no[0]',$_GET[kategori],'$now_date',$last_stock,$qr_part_no[1],0,$current_stock_in)");
+                            } else if ($now_date == $tgl_akhir) {
+                                // update stock_area pada tgl terakhir
+                                $add_stock_in = mysqli_query($conn, "UPDATE stock SET stock_in='$tambah_stock_in', current_stock='$current_stock_in' WHERE part_no='$qr_part_no[0]' and tgl='$tgl_akhir' and kategori='$_GET[kategori]'");
+                            }
                             echo '<script>
-                                 swal.fire({
-                                     title: "Success",
-                                     text: "Scan QR label Complete",
-                                     icon: "success",
-                                     timer: 1500
-                                 }).then(function(){
-                                     document.getElementById("part_scan").focus();
-                                     });
-                             </script>';
+                                    swal.fire({
+                                        title: "Success",
+                                        text: "Scan QR label Complete",
+                                        icon: "success",
+                                        timer: 1500
+                                    }).then(function(){
+                                        document.getElementById("part_scan").focus();
+                                        });
+                                </script>';
                         } else {
                             echo '<script>
-                                 swal.fire({
-                                     title: "Error!",
-                                     text: "Part Number Customer Tidak Cocok",
-                                     icon:"error",
-                                 }).then(function(){
-                                     document.getElementById("part_scan").focus();
-                                     });
-                             </script>';
+                                        swal.fire({
+                                            title: "Error!",
+                                            text: "Part Number Customer Tidak Cocok",
+                                            icon:"error",
+                                        }).then(function(){
+                                            document.getElementById("part_scan").focus();
+                                            });
+                                    </script>';
                         };
                     };
-
                     // SCAN PART CST
                     ?>
 

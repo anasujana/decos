@@ -1,6 +1,5 @@
 <?php
 include('koneksi/koneksi.php');
-date_default_timezone_set('Asia/Jakarta');
 $a = array();
 $row = 0;
 
@@ -12,14 +11,15 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                             cs.customer,
                                                             pp.part_no,
                                                             lp.part_name,
+                                                            sa.id,
                                                             sa.qty AS total_stock,
                                                             sa.del_day AS deliv_day,
                                                             MAX(CASE WHEN sar.kategori = 1 THEN COALESCE(sar.current_stock, 0) END) AS stock_fg,
                                                             MAX(CASE WHEN sar.kategori = 2 THEN COALESCE(sar.current_stock, 0) END) AS wip_rm,
                                                             MAX(CASE WHEN sar.kategori = 3 THEN COALESCE(sar.current_stock, 0) END) AS wip_produksi,
-                                                            pl.plan,
+                                                            COALESCE(pl.plan, 0) AS plan,
                                                             sa.std_stock AS std_stok,
-                                                            sa.remark,
+                                                            COALESCE(sa.remark, '-') AS remark,
                                                             '' AS action
                                                         FROM 
                                                             list_part lp
@@ -44,6 +44,8 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                             pp.part_no,
                                                             lp.part_name,
                                                             sa.qty,
+                                                            pl.plan,
+                                                            sa.id,
                                                             sa.del_day,
                                                             sa.std_stock,
                                                             sa.remark,
@@ -52,14 +54,16 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
 
                                                     SELECT *
                                                     FROM RankedData
-                                                    WHERE rnk = 1
-                                                    ORDER BY total_stock DESC;
-                                                    ");
+                                                    WHERE rnk = 1 
+                                                    AND (total_stock - plan) < std_stok
+                                                    ORDER BY total_stock DESC
+                                        ");
 
 $no = 1;
 
 foreach ($stock_data as $data_stock) {
     $nama_area = $data_stock['wh'];
+    $id_stock = $data_stock['id'];
     $customer = $data_stock['customer'];
     $part_no = $data_stock['part_no'];
     $part_name = $data_stock['part_name'];
@@ -98,7 +102,7 @@ foreach ($stock_data as $data_stock) {
     $a[$row][14] = $bal_std; //BALANCE STD STOCK
     $a[$row][15] = $remark; //remark
     $a[$row][16] = "<button type='button' class='btn btn-icon btn-success btn-circle btn-sm edit' data-toggle='modal' 
-    data-id='$part_no' data-nama='$part_name' data-qtydeliv='$deliv_day' data-qtystd='$std_stock'
+    data-idstock='$id_stock' data-id='$part_no' data-nama='$part_name'
     data-target='#editModal'> 
     EDIT
     </button>";
