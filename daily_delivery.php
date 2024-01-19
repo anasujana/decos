@@ -39,6 +39,8 @@ date_default_timezone_set('Asia/Jakarta')
     <!-- <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" /> -->
     <!-- Style.css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <script src="https://cdn.fusioncharts.com/fusioncharts/latest/fusioncharts.js"></script>
+    <script src="https://cdn.fusioncharts.com/fusioncharts/latest/themes/fusioncharts.theme.fusion.js"></script>
 </head>
 
 <body>
@@ -452,10 +454,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                 <th style="width: 14.7875px;" class="text-center" style="vertical-align: middle;">&nbsp;DAYS</th>
                                                                                 <th style="width: 115px;" class="text-center" style="vertical-align: middle;">RM</th>
                                                                                 <th style="width: 115px;" class="text-center" style="vertical-align: middle;">PRODUKSI</th>
-<<<<<<< HEAD
                                                                                 <th style="width: 18px;" class="text-center" style="vertical-align: middle;">&nbsp;MINUS</th>
-=======
->>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                                                 <th style="width: 18px;" class="text-center" style="vertical-align: middle;">&nbsp;PLAN</th>
                                                                                 <th style="width: 10px;" class="text-center" style="vertical-align: middle;">&nbsp;BALANCE</th>
                                                                                 <th style="width: 15px;" class="text-center" style="vertical-align: middle;">&nbsp;PCS</th>
@@ -585,6 +584,8 @@ date_default_timezone_set('Asia/Jakarta')
                                                                     </table>
                                                                 </div>
                                                             </div>
+                                                            <!-- <br>
+                                                            <div id="chart-container"></div> -->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -623,18 +624,12 @@ date_default_timezone_set('Asia/Jakarta')
                                 <input type="text" id="part_no_data" class="form-control" readonly>
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="Nama">Part Name </label>
+                                <label for="Nama">Part Name :</label>
                                 <input type="text" id="part_name_data" class="form-control" readonly>
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="remark">Remark :</label>
-<<<<<<< HEAD
-                                <br>in
+                                <label for="remark">Remark :</label><br>
                                 <textarea name="remark" id="remark" cols="59" rows="5" autofocus></textarea>
-=======
-                                <br>
-                                <textarea name="remark" id="remark" cols="50" rows="5" autofocus></textarea>
->>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -718,6 +713,66 @@ date_default_timezone_set('Asia/Jakarta')
     <!-- custom js -->
     <script type="text/javascript" src="assets/js/script.js "></script>
 
+    <script>
+        const dataSource = {
+            chart: {
+                caption: "Delivery Status On This Day",
+                subcaption: "",
+                lowerlimit: "0",
+                upperlimit: "100",
+                showvalue: "1",
+                numbersuffix: "%",
+                theme: "gammel"
+            },
+            colorrange: {
+                color: [{
+                        minvalue: "0",
+                        maxvalue: "50",
+                        code: "#F2726F"
+                    },
+                    {
+                        minvalue: "50",
+                        maxvalue: "75",
+                        code: "#FFC533"
+                    },
+                    {
+                        minvalue: "75",
+                        maxvalue: "100",
+                        code: "#62B58F"
+                    }
+                ]
+            },
+            dials: {
+                dial: [{
+                    value: "75",
+                    tooltext: "<b>9%</b> lesser that target"
+                }]
+            },
+            trendpoints: {
+                point: [{
+                    startvalue: "80",
+                    displayvalue: "Target",
+                    thickness: "2",
+                    color: "#E15A26",
+                    usemarker: "1",
+                    markerbordercolor: "#E15A26",
+                    markertooltext: "80%"
+                }]
+            }
+        };
+
+        FusionCharts.ready(function() {
+            var myChart = new FusionCharts({
+                type: "angulargauge",
+                renderAt: "chart-container",
+                width: "100%",
+                height: "100%",
+                dataFormat: "json",
+                dataSource
+            }).render();
+        });
+    </script>
+
     <!-- datatables -->
     <script type="text/javascript">
         $(document).ready(function() {
@@ -764,12 +819,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                 CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
                                                                             WHERE 
                                                                                 DATE_ADD('$tanggal_pertama_formatted', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY) BETWEEN '$tanggal_pertama_formatted' AND '$tanggal_terakhir_formatted'
-<<<<<<< HEAD
                                                                             )
-=======
-                                                                                AND DAYOFWEEK(DATE_ADD(''$tanggal_pertama_formatted', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY)) NOT IN (1, 7) -- Exclude Sunday (1) and Saturday (7)
-                                                                        )
->>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                                         SELECT 
                                                                             dr.date AS tgl,
                                                                             COALESCE(SUM(p.plan), 0) AS planing,
@@ -790,10 +840,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                             surat_jalan sj ON sj.no_delivery = p.no_delivery
                                                                         WHERE 
                                                                             MONTH(dr.date) = '$bln_filter' AND YEAR(dr.date) = '$thn_filter'
-<<<<<<< HEAD
                                                                             AND (p.plan IS NOT NULL OR DAYOFWEEK(dr.date) NOT IN (1, 7))
-=======
->>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                                         GROUP BY 
                                                                             dr.date
                                                                         ORDER BY 
@@ -808,31 +855,18 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                     CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
                                                                                 WHERE 
                                                                                     DATE_ADD('$tanggal_pertama', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY) BETWEEN '$tanggal_pertama' AND '$tanggal_terakhir'
-<<<<<<< HEAD
                                                                                    
                                                                             )
                                                                             SELECT 
                                                                                 dr.date AS tgl,
                                                                                 CASE WHEN dr.date = CURDATE() THEN 0 ELSE COALESCE(SUM(p.plan), 0) END AS planing,
                                                                                 CASE WHEN dr.date = CURDATE() THEN 0 ELSE COALESCE(SUM(
-=======
-                                                                                    AND DAYOFWEEK(DATE_ADD('$tanggal_pertama', INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY)) NOT IN (1, 7) -- Exclude Sunday (1) and Saturday (7)
-                                                                            )
-                                                                            SELECT 
-                                                                                dr.date AS tgl,
-                                                                                COALESCE(SUM(p.plan), 0) AS planing,
-                                                                                COALESCE(SUM(
->>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                                                     CASE
                                                                                         WHEN p.tgl <= p.tgl_kirim THEN
                                                                                             (SELECT COALESCE(SUM(pr.qty), 0) FROM prepare pr WHERE pr.part_no_prep = p.part_no AND pr.no_delivery = p.no_delivery)
                                                                                         ELSE 0
                                                                                     END
-<<<<<<< HEAD
                                                                                 ), 0) END AS actual
-=======
-                                                                                ), 0) AS actual
->>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                                             FROM 
                                                                                 DateRange dr
                                                                             LEFT JOIN 
@@ -843,10 +877,7 @@ date_default_timezone_set('Asia/Jakarta')
                                                                                 surat_jalan sj ON sj.no_delivery = p.no_delivery
                                                                             WHERE 
                                                                                 MONTH(dr.date) = '$now_month' AND YEAR(dr.date) = '$now_year'
-<<<<<<< HEAD
                                                                                 AND (p.plan IS NOT NULL OR DAYOFWEEK(dr.date) NOT IN (1, 7))
-=======
->>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                                             GROUP BY 
                                                                                 dr.date
                                                                             ORDER BY 
@@ -878,11 +909,7 @@ date_default_timezone_set('Asia/Jakarta')
                             $actual = $data_tgl['actual'];
                             $plan_tgl = $data_tgl['planing'];
                             if ($plan_tgl == 0) {
-<<<<<<< HEAD
                                 $achtotal = 100;
-=======
-                                $achtotal = 0;
->>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                             } else {
                                 $achtotal = ($actual / $plan_tgl) * 100;
                                 $achtotal = round($achtotal, 2);
