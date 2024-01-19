@@ -17,8 +17,12 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                             MAX(CASE WHEN sar.kategori = 1 THEN COALESCE(sar.current_stock, 0) END) AS stock_fg,
                                                             MAX(CASE WHEN sar.kategori = 2 THEN COALESCE(sar.current_stock, 0) END) AS wip_rm,
                                                             MAX(CASE WHEN sar.kategori = 3 THEN COALESCE(sar.current_stock, 0) END) AS wip_produksi,
+<<<<<<< HEAD
                                                             (SELECT sum(plan) from plan pln where pln.part_no = lp.part_no AND pln.tgl_kirim IS NULL  AND tgl < CURRENT_DATE) as minus,
                                                             COALESCE(sum(pl.plan), 0) AS plan,
+=======
+                                                            COALESCE(pl.plan, 0) AS plan,
+>>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                             sa.std_stock AS std_stok,
                                                             COALESCE(sa.remark, '-') AS remark,
                                                             '' AS action
@@ -45,8 +49,12 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                             pp.part_no,
                                                             lp.part_name,
                                                             sa.qty,
+<<<<<<< HEAD
                                                             pl.part_no,
                                                             lp.part_no,
+=======
+                                                            pl.plan,
+>>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                             sa.id,
                                                             sa.del_day,
                                                             sa.std_stock,
@@ -56,7 +64,11 @@ $stock_data = mysqli_query($conn, "WITH RankedData AS (
                                                     SELECT *
                                                     FROM RankedData
                                                     WHERE rnk = 1 
+<<<<<<< HEAD
                                                         AND (total_stock - plan) < std_stok
+=======
+                                                    AND (total_stock - plan) < std_stok
+>>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
                                                     ORDER BY total_stock DESC
                                         ");
 
@@ -98,6 +110,7 @@ foreach ($stock_data as $data_stock) {
     $a[$row][8] = $stock_day; //stock/day
     $a[$row][9] =  $wip_rm; //WIP RM
     $a[$row][10] =  $wip_produksi; //WIP PROD
+<<<<<<< HEAD
     $a[$row][11] =  $minus; //MINDEL
     $a[$row][12] = $plan; //PLAN DELIVERY
     $a[$row][13] =  $bal_deliv; //BALANCE DELIVERY
@@ -105,6 +118,14 @@ foreach ($stock_data as $data_stock) {
     $a[$row][15] = $bal_std; //BALANCE STD STOCK
     $a[$row][16] = $remark; //remark
     $a[$row][17] = "<button type='button' class='btn btn-icon btn-success btn-circle btn-sm edit' data-toggle='modal' 
+=======
+    $a[$row][11] = $plan; //PLAN DELIVERY
+    $a[$row][12] =  $bal_deliv; //BALANCE DELIVERY
+    $a[$row][13] = $std_stock; //STD STOCK
+    $a[$row][14] = $bal_std; //BALANCE STD STOCK
+    $a[$row][15] = $remark; //remark
+    $a[$row][16] = "<button type='button' class='btn btn-icon btn-success btn-circle btn-sm edit' data-toggle='modal' 
+>>>>>>> 8ad8defbc58cdf6adb6b93ca500740f41b7cabf5
     data-idstock='$id_stock' data-id='$part_no' data-nama='$part_name'
     data-target='#editModal'> 
     EDIT
