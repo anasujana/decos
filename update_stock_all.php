@@ -13,12 +13,12 @@
     <!-- edit area -->
     <?php
     include('koneksi/koneksi.php');
-    $stock_id = $_POST['stock_id'];
-    $remark = $_POST['remark'];
+    $id_stock_all = $_POST['id_stock_all'];
+    $del_day_all = $_POST['del_day_all'];
+    $std_stock_all = $_POST['std_stock_all'];
 
-    $update = mysqli_query($conn, "UPDATE stock_all SET remark='$remark' WHERE id='$stock_id'");
-    header('location: daily_delivery.php');
-
+    $update = mysqli_query($conn, "UPDATE stock_all SET del_day='$del_day_all', std_stock='$std_stock_all' WHERE id='$id_stock_all'");
+    header('location: daily_delivery.php');1
     ?>
     <!-- edit area -->
 

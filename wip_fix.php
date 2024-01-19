@@ -69,72 +69,131 @@ date_default_timezone_set('Asia/Jakarta')
 
                     <?php
                     // SCAN PART FLN
-                    // if (isset($_POST['part_scan'])) {
-                    //     // terima part_number
-                    //     $part_scan = $_POST['part_scan'];
-                    //     $qr_part_no = explode("/", $part_scan);
-                    //     $now_date = date("Y-m-d");
+                    if (isset($_POST['part_scan'])) {
+                        // terima part_number
+                        $part_scan = $_POST['part_scan'];
+                        $qr_part_no = explode("/", $part_scan);
+                        $now_date = date("Y-m-d");
 
-                    //     // Cek part no dari master data
-                    //     $cek_stock_mt = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no FROM list_part where part_no='$qr_part_no[0]'"));
-                    //     $part_no_mt = $cek_stock_mt['part_no'];
+                        // Cek part no dari master data
+                        $cek_stock_mt = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no FROM list_part where part_no='$qr_part_no[0]'"));
+                        $part_no_mt = $cek_stock_mt['part_no'];
 
-                    //     // Cek part  NO & qty stock 
-                    //     $cek_last_stock = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, tgl, stock_awal, stock_in, stock_out, current_stock FROM stock where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl DESC LIMIT 1"));
-                    //     $tgl_akhir = $cek_last_stock['tgl'] ?? null;
-                    //     $last_stock = $cek_last_stock['current_stock'] ?? 0;
-                    //     $stock_in = $cek_last_stock['stock_in'] ?? 0;
-                    //     $tambah_stock_in = $stock_in + $qr_part_no[1];
-                    //     $current_stock_in = $last_stock + $qr_part_no[1];
-                    //     $stock_out = $cek_last_stock['stock_out'] ?? 0;
-                    //     $tambah_stock_out = $stock_out + $qr_part_no[1];
+                        // Cek part  NO & qty stock in
+                        $cek_stock_in = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, qty, tgl FROM stock_in where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl DESC LIMIT 1"));
 
-                    //     // Cek part no & qty stock all
-                    //     $data_stock_all = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, tgl_updated, del_day, std_stock, qty FROM stock_all where part_no='$qr_part_no[0]' ORDER BY tgl_updated DESC LIMIT 1"));
-                    //     $last_stock_all = $data_stock_all['tgl_updated'] ?? null;
-                    //     $stock_all = $data_stock_all['qty'] ?? 0;
-                    //     $del_day = $data_stock_all['del_day'] ?? 0;
-                    //     $std_stock = $data_stock_all['std_stock'] ?? 0;
-                    //     $tambah_stock_all = $stock_all + $qr_part_no[1];
+                        // Gunakan operator null coalescing untuk memberikan nilai default jika $cek_stock_in null
+                        $stock_in = $cek_stock_in['qty'] ?? 0;
+                        $tgl_akhir_in = $cek_stock_in['tgl'] ?? null;
 
-                    //     if (($part_no_mt == $qr_part_no[0])) {
-                    //         if ($now_date != $last_stock_all) {
-                    //             // tambahkan ke stok area
-                    //             $add_stok_all = mysqli_query($conn, "INSERT INTO stock_all VALUES (NULL,'$qr_part_no[0]','$now_date','$tambah_stock_all',' $del_day','$std_stock',NULL)");
-                    //         } else if ($now_date == $last_stock_all) {
-                    //             // update stock_area pada tgl terakhir
-                    //             $add_stok_all = mysqli_query($conn, "UPDATE stock_all SET qty='$tambah_stock_all' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_stock_all'");
-                    //         }
+                        $tambah_stock_in = $stock_in + $qr_part_no[1];
 
-                    //         if ($now_date != $tgl_akhir) {
-                    //             // tambahkan ke stok area
-                    //             $add_stock_in = mysqli_query($conn, "INSERT INTO stock VALUES (NULL,'$qr_part_no[0]',$_GET[kategori],'$now_date',$last_stock,$qr_part_no[1],0,$current_stock_in)");
-                    //         } else if ($now_date == $tgl_akhir) {
-                    //             // update stock_area pada tgl terakhir
-                    //             $add_stock_in = mysqli_query($conn, "UPDATE stock SET stock_in='$tambah_stock_in', current_stock='$current_stock_in' WHERE part_no='$qr_part_no[0]' and tgl='$tgl_akhir' and kategori='$_GET[kategori]'");
-                    //         }
-                    //         echo '<script>
-                    //                 swal.fire({
-                    //                     title: "Success",
-                    //                     text: "Scan QR label Complete",
-                    //                     icon: "success",
-                    //                     timer: 1500
-                    //                 }).then(function(){
-                    //                     document.getElementById("part_scan").focus();
-                    //                     });
-                    //             </script>';
-                    //     } else {
-                    //         echo '<script>
-                    //                     swal.fire({
-                    //                         title: "Error!",
-                    //                         text: "Part Number Customer Tidak Cocok",
-                    //                         icon:"error",
-                    //                     }).then(function(){
-                    //                         document.getElementById("part_scan").focus();
-                    //                         });
-                    //                 </script>';
-                    //     };
-                    // };
+                        if ($part_no_mt == $qr_part_no[0]) {
+                            if ($now_date != $tgl_akhir_in and $_GET['kategori'] != 1) {
+                                // tambahkan ke stok area
+                                $add_stock_in = mysqli_query($conn, "INSERT INTO stock_in VALUES (NULL,'$qr_part_no[0]','$now_date','$qr_part_no[1]','$_GET[kategori]')");
+                            } else if ($now_date == $tgl_akhir_in) {
+                                // update stock_area pada tgl terakhir
+                                $add_stock_in = mysqli_query($conn, "UPDATE stock_in SET qty='$tambah_stock_in' WHERE part_no='$qr_part_no[0]' and tgl='$tgl_akhir_in' and kategori='$_GET[kategori]'");
+                            }
+                            echo '<script>
+                                 swal.fire({
+                                     title: "Success",
+                                     text: "Scan QR label Complete",
+                                     icon: "success",
+                                     timer: 1500
+                                 }).then(function(){
+                                     document.getElementById("part_scan").focus();
+                                     });
+                             </script>';
+                        } else {
+                            echo '<script>
+                                 swal.fire({
+                                     title: "Error!",
+                                     text: "Part Number Customer Tidak Cocok",
+                                     icon:"error",
+                                 }).then(function(){
+                                     document.getElementById("part_scan").focus();
+                                     });
+                             </script>';
+                        };
+
+                        // Cek part  NO & qty stock area
+                        $part_no_all = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, current_stock, tgl_updated FROM stock_area where part_no='$qr_part_no[0]' and kategori='$_GET[kategori]' ORDER BY tgl_updated DESC LIMIT 1"));
+                        $stock_area = $part_no_all['current_stock'] ?? 0;
+                        $last_updated_area = $part_no_all['tgl_updated']  ?? null;
+                        $tambah_stock_area = $stock_area + $qr_part_no[1];
+                        $kurangi_stock_area = $stock_area - $qr_part_no[1];
+
+                        if ($part_no_mt == $qr_part_no[0]) {
+                            if ($now_date != $last_updated_area and $_GET['kategori'] != 1) {
+                                // update stock_area pada tgl terakhir
+                                $add_stock_area = mysqli_query($conn, "INSERT INTO stock_area VALUES (NULL,'$qr_part_no[0]','$tambah_stock_area','$_GET[kategori]','$now_date')");
+                            } else if ($now_date == $last_updated_area and $_GET['kategori'] != 1) {
+                                // update stock_area pada tgl terakhir
+                                $update_stock_area = mysqli_query($conn, "UPDATE stock_area SET current_stock='$tambah_stock_area' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_updated_area' and kategori='$_GET[kategori]'");
+                            };
+                            echo '<script>
+                                 swal.fire({
+                                     title: "Success",
+                                     text: "Scan QR label Complete",
+                                     icon: "success",
+                                     timer: 1500
+                                 }).then(function(){
+                                     document.getElementById("part_scan").focus();
+                                     });
+                             </script>';
+                        } else {
+                            echo '<script>
+                                 swal.fire({
+                                     title: "Error!",
+                                     text: "Part Number Customer Tidak Cocok",
+                                     icon:"error",
+                                 }).then(function(){
+                                     document.getElementById("part_scan").focus();
+                                     });
+                             </script>';
+                        };
+
+                        // Cek part no & qty stock all
+                        $data_stock_all = mysqli_fetch_assoc(mysqli_query($conn, "SELECT part_no, tgl_updated, del_day, std_stock, qty FROM stock_all where part_no='$qr_part_no[0]' ORDER BY tgl_updated DESC LIMIT 1"));
+                        $last_stock_all = $data_stock_all['tgl_updated'] ?? null;
+                        $stock_all = $data_stock_all['qty'] ?? 0;
+                        $del_day = $data_stock_all['del_day'] ?? 0;
+                        $std_stock = $data_stock_all['std_stock'] ?? 0;
+                        $tambah_stock_all = $stock_all + $qr_part_no[1];
+
+                        if (($part_no_mt == $qr_part_no[0])) {
+                            if ($now_date != $last_stock_all) {
+                                // tambahkan ke stok area
+                                $add_stok_all = mysqli_query($conn, "INSERT INTO stock_all VALUES (NULL,'$qr_part_no[0]','$now_date','$tambah_stock_all',' $del_day','$std_stock',NULL)");
+                            } else if ($now_date == $last_stock_all) {
+                                // update stock_area pada tgl terakhir
+                                $add_stok_all = mysqli_query($conn, "UPDATE stock_all SET qty='$tambah_stock_all' WHERE part_no='$qr_part_no[0]' and tgl_updated='$last_stock_all'");
+                            }
+                            echo '<script>
+                                 swal.fire({
+                                     title: "Success",
+                                     text: "Scan QR label Complete",
+                                     icon: "success",
+                                     timer: 1500
+                                 }).then(function(){
+                                     document.getElementById("part_scan").focus();
+                                     });
+                             </script>';
+                        } else {
+                            echo '<script>
+                                 swal.fire({
+                                     title: "Error!",
+                                     text: "Part Number Customer Tidak Cocok",
+                                     icon:"error",
+                                 }).then(function(){
+                                     document.getElementById("part_scan").focus();
+                                     });
+                             </script>';
+                        };
+                    };
+
                     // SCAN PART CST
                     ?>
 
@@ -183,8 +242,8 @@ date_default_timezone_set('Asia/Jakarta')
                                                         <div class="card-header-right">
                                                             <div class="form-group row">
                                                                 <div class="col-sm-12">
-                                                                    <form action="" method="" id="label_scan">
-                                                                        <input type="text" id="item_scan" class="form-control form-control-round" style="text-align: center;" placeholder="PART NO / QTY" autofocus>
+                                                                    <form action="" method="POST">
+                                                                        <input type="text" name="part_scan" id="part_scan" class="form-control form-control-round" style="text-align: center;" placeholder="PART NO / QTY" autofocus>
                                                                         <input type="submit" name="submit_scan" style="display:none">
                                                                     </form>
                                                                 </div>
@@ -202,6 +261,53 @@ date_default_timezone_set('Asia/Jakarta')
                                                                     <th>WIP IN</th>
                                                                     <th>ACTION</th>
                                                                 </thead>
+                                                                <tbody>
+                                                                    <?php
+                                                                    $now_date = date("Y-m-d");
+                                                                    $plan_deliv = mysqli_query($conn, "SELECT pd.part_no, 
+                                                                                                                lp.part_name,
+                                                                                                                COALESCE(s.qty, 0) AS stock_in,
+                                                                                                                s.qty,
+                                                                                                                s.tgl,
+                                                                                                                s.stock_id,
+                                                                                                                ar.nama_area,
+                                                                                                                ks.jenis_stock
+                                                                                                        FROM part_prod pd
+                                                                                                        LEFT JOIN list_part lp ON lp.part_no = pd.part_no
+                                                                                                        LEFT JOIN stock_in s ON pd.part_no = s.part_no AND s.tgl = '$now_date' AND s.kategori = '$_GET[kategori]'
+                                                                                                        LEFT JOIN kategori_stock ks ON ks.id = s.kategori
+                                                                                                        LEFT JOIN area ar ON ar.id = pd.id_area");
+
+
+
+
+                                                                    $no = 1;
+
+                                                                    foreach ($plan_deliv as $data1) {
+                                                                        $nama_area = $data1['nama_area'];
+                                                                        $part_no = $data1['part_no'];
+                                                                        $part_name = $data1['part_name'];
+                                                                        $prod = $data1['stock_in'];
+                                                                        $part_asal = $data1['jenis_stock'];
+                                                                        $tgl_wip = $data1['tgl'];
+                                                                        $stock_id = $data1['stock_id'];
+                                                                    ?>
+                                                                        <tr>
+                                                                            <td><?php echo $no; ?></td>
+                                                                            <td><?php echo $nama_area; ?></td>
+                                                                            <td><?php echo $part_no; ?></td>
+                                                                            <td><?php echo $part_name; ?></td>
+                                                                            <td><?php echo $prod; ?></td>
+                                                                            <td><button type='button' class='btn btn-icon btn-danger btn-circle btn-sm edit_in' data-toggle='modal' data-tglin="<?= $tgl_wip ?> " data-stockid="<?= $stock_id ?> " data-partno="<?= $part_no ?>" data-partname="<?= $part_name ?>" data-target='#editOjIn'>
+                                                                                    <i class="ti-minus"></i>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    <?php
+                                                                        $no++;
+                                                                    }
+                                                                    ?>
+                                                                </tbody>
                                                             </table>
                                                         </div>
                                                     </div>
@@ -285,10 +391,8 @@ date_default_timezone_set('Asia/Jakarta')
     <script type="text/javascript" src="assets/js/script.js "></script>
 
     <script type="text/javascript">
-        var table = $('.datas').DataTable({
-            "ajax": 'wip_data.php<?php
-                                    echo '?kategori=' . $_GET['kategori'];
-                                    ?>',
+        $(document).ready(function() {
+            $('.datas').DataTable();
         });
 
         $('#oj_in').on('click', '.edit_in', function() {
@@ -305,43 +409,6 @@ date_default_timezone_set('Asia/Jakarta')
             var id4 = $(this).data('tglin');
             $('#tgl_in').val(id4);
         })
-
-        $(document).ready(function() {
-            $('#label_scan').on('submit', function(e) {
-                e.preventDefault();
-                var no_item = $('#item_scan').val();
-                var urlParams = new URLSearchParams(window.location.search);
-                var kategori_stock = urlParams.get('kategori');
-                $.ajax({
-                    type: 'POST',
-                    url: 'save_wip.php', // Ganti dengan URL pemrosesan Anda
-                    data: {
-                        no_part: no_item,
-                        kategori: kategori_stock
-                    },
-                    success: function(response) {
-                        table.ajax.reload();
-                        $('#label_scan')[0].reset();
-                        // Reset form
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success',
-                            text: 'Scan QR Berhasil',
-                            timer: 1500
-                        });
-                    },
-
-                    error: function(response) {
-                        // Tampilkan SweetAlert untuk pesan error
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'Terjadi kesalahan saat mengirim data.'
-                        });
-                    }
-                });
-            });
-        });
     </script>
 </body>
 
